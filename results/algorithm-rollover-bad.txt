@@ -1,0 +1,15 @@
+FlightCheck real resolvers - Algorithm rollover RSA (8) to ECDSA (13), rushed (clock x600)
+Unbound 1.26.2 (3 instances): 4034 lookups
+  secure 2850, insecure 0, SERVFAIL 1184, timeouts 0, other 0
+  really validating: yes
+  first failure T+3h 58m 37s, last T+1d 15m 41s
+  EDE codes: {'6': 1184}
+  conservative: predicted 22h 7m, inside 1184/1184 (without timers 1184/1184), observed 20h 19m 34s, last failure -4 real seconds after the zone became valid
+  fetch: predicted 22h 1m, inside 1184/1184 (without timers 1184/1184), observed 20h 19m 34s, last failure -4 real seconds after the zone became valid
+BIND 9.16.50 (3 instances): 4029 lookups
+  secure 3077, insecure 0, SERVFAIL 952, timeouts 0, other 0
+  really validating: yes
+  first failure T+3h 58m 37s, last T+23h 57m 43s
+  EDE codes: -
+  conservative: predicted 22h 6m, inside 952/952 (without timers 952/952), observed 20h 1m 38s, last failure -6 real seconds after the zone became valid
+  fetch: predicted 22h 30s, inside 952/952 (without timers 952/952), observed 20h 1m 38s, last failure -6 real seconds after the zone became valid

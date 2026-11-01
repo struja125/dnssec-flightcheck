@@ -1,0 +1,1437 @@
+[
+ {
+  "scenario": "algorithm-rollover-bad",
+  "scale": 600.0,
+  "default_timers": false,
+  "plan": "Algorithm rollover RSA (8) to ECDSA (13), rushed",
+  "interval": 0.25,
+  "instances": 3,
+  "results": {
+   "unbound": {
+    "software": "unbound",
+    "instances": 3,
+    "lookups": 4034,
+    "secure": 2850,
+    "insecure": 0,
+    "servfail": 1184,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 1184,
+     "fetch": 1184
+    },
+    "first_failure": 14317.230463027954,
+    "last_failure": 87340.88401794434,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 79620,
+     "fetch": 79260
+    },
+    "observed_seconds": {
+     "conservative": 73174.09372329712,
+     "fetch": 73174.09372329712
+    },
+    "recovery_real": {
+     "conservative": -4.431859970092773,
+     "fetch": -4.431859970092773
+    },
+    "inside_without_memory": {
+     "conservative": 1184,
+     "fetch": 1184
+    },
+    "memory": [
+     60,
+     1
+    ],
+    "ede": {
+     "6": 1184
+    },
+    "segments": [
+     [
+      -86399.44181442261,
+      14317.230463027954,
+      "secure"
+     ],
+     [
+      14317.230463027954,
+      87491.32418632507,
+      "bogus"
+     ],
+     [
+      87491.32418632507,
+      145481.0806274414,
+      "secure"
+     ]
+    ],
+    "validated": true
+   },
+   "bind": {
+    "software": "bind",
+    "instances": 3,
+    "lookups": 4029,
+    "secure": 3077,
+    "insecure": 0,
+    "servfail": 952,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 952,
+     "fetch": 952
+    },
+    "first_failure": 14317.086410522461,
+    "last_failure": 86263.2089138031,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 79560,
+     "fetch": 79230
+    },
+    "observed_seconds": {
+     "conservative": 72097.71366119385,
+     "fetch": 72097.71366119385
+    },
+    "recovery_real": {
+     "conservative": -6.227985143661499,
+     "fetch": -6.227985143661499
+    },
+    "inside_without_memory": {
+     "conservative": 952,
+     "fetch": 952
+    },
+    "memory": [
+     30,
+     0
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -86399.33567047119,
+      14317.086410522461,
+      "secure"
+     ],
+     [
+      14317.086410522461,
+      86414.80007171631,
+      "bogus"
+     ],
+     [
+      86414.80007171631,
+      145402.2274017334,
+      "secure"
+     ]
+    ],
+    "validated": true
+   }
+  }
+ },
+ {
+  "scenario": "algorithm-rollover-good",
+  "scale": 600.0,
+  "default_timers": false,
+  "plan": "Algorithm rollover RSA (8) to ECDSA (13), RFC 6781 conservative method",
+  "interval": 0.25,
+  "instances": 3,
+  "results": {
+   "unbound": {
+    "software": "unbound",
+    "instances": 3,
+    "lookups": 4657,
+    "secure": 4657,
+    "insecure": 0,
+    "servfail": 0,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "first_failure": null,
+    "last_failure": null,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "observed_seconds": {
+     "conservative": 0.0,
+     "fetch": 0.0
+    },
+    "recovery_real": {},
+    "inside_without_memory": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "memory": [
+     60,
+     1
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -86399.49159622192,
+      176882.19809532166,
+      "secure"
+     ]
+    ],
+    "validated": true
+   },
+   "bind": {
+    "software": "bind",
+    "instances": 3,
+    "lookups": 4658,
+    "secure": 4658,
+    "insecure": 0,
+    "servfail": 0,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "first_failure": null,
+    "last_failure": null,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "observed_seconds": {
+     "conservative": 0.0,
+     "fetch": 0.0
+    },
+    "recovery_real": {},
+    "inside_without_memory": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "memory": [
+     30,
+     0
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -86398.99020195007,
+      176912.39304542542,
+      "secure"
+     ]
+    ],
+    "validated": true
+   }
+  }
+ },
+ {
+  "scenario": "go-insecure-bad",
+  "scale": 600.0,
+  "default_timers": false,
+  "plan": "Turning DNSSEC off, everything at once",
+  "interval": 0.25,
+  "instances": 3,
+  "results": {
+   "unbound": {
+    "software": "unbound",
+    "instances": 3,
+    "lookups": 4034,
+    "secure": 1218,
+    "insecure": 1389,
+    "servfail": 1427,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 1427,
+     "fetch": 1427
+    },
+    "first_failure": 3653.417444229126,
+    "last_failure": 113273.3582496643,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 90060,
+     "fetch": 90060
+    },
+    "observed_seconds": {
+     "conservative": 109770.42632102966,
+     "fetch": 109770.42632102966
+    },
+    "recovery_real": {
+     "conservative": 38.78893041610718,
+     "fetch": 38.78893041610718
+    },
+    "inside_without_memory": {
+     "conservative": 1281,
+     "fetch": 1281
+    },
+    "memory": [
+     60,
+     1
+    ],
+    "ede": {
+     "9": 1427
+    },
+    "segments": [
+     [
+      -86399.09777641296,
+      3653.417444229126,
+      "secure"
+     ],
+     [
+      3653.417444229126,
+      113423.84376525879,
+      "bogus"
+     ],
+     [
+      113423.84376525879,
+      145475.43096542358,
+      "insecure"
+     ]
+    ],
+    "validated": true
+   },
+   "bind": {
+    "software": "bind",
+    "instances": 3,
+    "lookups": 4030,
+    "secure": 1210,
+    "insecure": 1751,
+    "servfail": 1069,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 1069,
+     "fetch": 1069
+    },
+    "first_failure": 3050.4966259002686,
+    "last_failure": 86279.04109954834,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 90030,
+     "fetch": 90030
+    },
+    "observed_seconds": {
+     "conservative": 83379.90775108337,
+     "fetch": 83379.90775108337
+    },
+    "recovery_real": {
+     "conservative": -6.201598167419434,
+     "fetch": -6.201598167419434
+    },
+    "inside_without_memory": {
+     "conservative": 1069,
+     "fetch": 1069
+    },
+    "memory": [
+     30,
+     0
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -86399.22595024109,
+      3050.4966259002686,
+      "secure"
+     ],
+     [
+      3050.4966259002686,
+      86430.40437698364,
+      "bogus"
+     ],
+     [
+      86430.40437698364,
+      145477.6804447174,
+      "insecure"
+     ]
+    ],
+    "validated": true
+   }
+  }
+ },
+ {
+  "scenario": "go-insecure-good",
+  "scale": 600.0,
+  "default_timers": false,
+  "plan": "Turning DNSSEC off, DS first",
+  "interval": 0.25,
+  "instances": 3,
+  "results": {
+   "unbound": {
+    "software": "unbound",
+    "instances": 3,
+    "lookups": 4272,
+    "secure": 2339,
+    "insecure": 1933,
+    "servfail": 0,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "first_failure": null,
+    "last_failure": null,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "observed_seconds": {
+     "conservative": 0.0,
+     "fetch": 0.0
+    },
+    "recovery_real": {},
+    "inside_without_memory": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "memory": [
+     60,
+     1
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -86399.44496154785,
+      32503.899478912354,
+      "secure"
+     ],
+     [
+      32503.899478912354,
+      86426.44243240356,
+      "partly-insecure"
+     ],
+     [
+      86426.44243240356,
+      157464.95275497437,
+      "insecure"
+     ]
+    ],
+    "validated": true
+   },
+   "bind": {
+    "software": "bind",
+    "instances": 3,
+    "lookups": 4272,
+    "secure": 2283,
+    "insecure": 1989,
+    "servfail": 0,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "first_failure": null,
+    "last_failure": null,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "observed_seconds": {
+     "conservative": 0.0,
+     "fetch": 0.0
+    },
+    "recovery_real": {},
+    "inside_without_memory": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "memory": [
+     30,
+     0
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -86398.8926410675,
+      28281.473064422607,
+      "secure"
+     ],
+     [
+      28281.473064422607,
+      86426.31869316101,
+      "partly-insecure"
+     ],
+     [
+      86426.31869316101,
+      157465.24872779846,
+      "insecure"
+     ]
+    ],
+    "validated": true
+   }
+  }
+ },
+ {
+  "scenario": "go-secure-bad",
+  "scale": 600.0,
+  "default_timers": false,
+  "plan": "Turning DNSSEC on, DS submitted together with signing",
+  "interval": 0.25,
+  "instances": 3,
+  "results": {
+   "unbound": {
+    "software": "unbound",
+    "instances": 3,
+    "lookups": 2191,
+    "secure": 973,
+    "insecure": 1218,
+    "servfail": 0,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "first_failure": null,
+    "last_failure": null,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 3360,
+     "fetch": 0
+    },
+    "observed_seconds": {
+     "conservative": 0.0,
+     "fetch": 0.0
+    },
+    "recovery_real": {},
+    "inside_without_memory": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "memory": [
+     60,
+     1
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -86399.76410865784,
+      3640.419816970825,
+      "insecure"
+     ],
+     [
+      3640.419816970825,
+      3675.5199909210205,
+      "partly-insecure"
+     ],
+     [
+      3675.5199909210205,
+      52834.78789329529,
+      "secure"
+     ]
+    ],
+    "validated": true
+   },
+   "bind": {
+    "software": "bind",
+    "instances": 3,
+    "lookups": 2191,
+    "secure": 973,
+    "insecure": 1218,
+    "servfail": 0,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "first_failure": null,
+    "last_failure": null,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 3330,
+     "fetch": 0
+    },
+    "observed_seconds": {
+     "conservative": 0.0,
+     "fetch": 0.0
+    },
+    "recovery_real": {},
+    "inside_without_memory": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "memory": [
+     30,
+     0
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -86399.57542419434,
+      3640.682315826416,
+      "insecure"
+     ],
+     [
+      3640.682315826416,
+      3675.7829189300537,
+      "partly-insecure"
+     ],
+     [
+      3675.7829189300537,
+      52835.048961639404,
+      "secure"
+     ]
+    ],
+    "validated": true
+   }
+  }
+ },
+ {
+  "scenario": "go-secure-good",
+  "scale": 600.0,
+  "default_timers": false,
+  "plan": "Turning DNSSEC on, sign first and submit the DS later",
+  "interval": 0.25,
+  "instances": 3,
+  "results": {
+   "unbound": {
+    "software": "unbound",
+    "instances": 3,
+    "lookups": 2344,
+    "secure": 970,
+    "insecure": 1374,
+    "servfail": 0,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "first_failure": null,
+    "last_failure": null,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "observed_seconds": {
+     "conservative": 0.0,
+     "fetch": 0.0
+    },
+    "recovery_real": {},
+    "inside_without_memory": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "memory": [
+     60,
+     1
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -86399.42035675049,
+      10336.184692382812,
+      "insecure"
+     ],
+     [
+      10336.184692382812,
+      13927.74167060852,
+      "partly-insecure"
+     ],
+     [
+      13927.74167060852,
+      60583.20407867432,
+      "secure"
+     ]
+    ],
+    "validated": true
+   },
+   "bind": {
+    "software": "bind",
+    "instances": 3,
+    "lookups": 2344,
+    "secure": 993,
+    "insecure": 1351,
+    "servfail": 0,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "first_failure": null,
+    "last_failure": null,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "observed_seconds": {
+     "conservative": 0.0,
+     "fetch": 0.0
+    },
+    "recovery_real": {},
+    "inside_without_memory": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "memory": [
+     30,
+     0
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -86399.12552833557,
+      10336.424016952515,
+      "insecure"
+     ],
+     [
+      10336.424016952515,
+      10456.809282302856,
+      "partly-insecure"
+     ],
+     [
+      10456.809282302856,
+      60583.738231658936,
+      "secure"
+     ]
+    ],
+    "validated": true
+   }
+  }
+ },
+ {
+  "scenario": "ksk-double-ds-bad",
+  "scale": 600.0,
+  "default_timers": false,
+  "plan": "KSK rollover (double-DS), KSK swapped too early",
+  "interval": 0.25,
+  "instances": 3,
+  "results": {
+   "unbound": {
+    "software": "unbound",
+    "instances": 3,
+    "lookups": 4343,
+    "secure": 2919,
+    "insecure": 0,
+    "servfail": 1424,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 1424,
+     "fetch": 1424
+    },
+    "first_failure": 10779.681587219238,
+    "last_failure": 118688.15774917603,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 82860,
+     "fetch": 82860
+    },
+    "observed_seconds": {
+     "conservative": 108059.25107002258,
+     "fetch": 108059.25107002258
+    },
+    "recovery_real": {
+     "conservative": 47.81359624862671,
+     "fetch": 47.81359624862671
+    },
+    "inside_without_memory": {
+     "conservative": 1242,
+     "fetch": 1242
+    },
+    "memory": [
+     60,
+     1
+    ],
+    "ede": {
+     "6": 1424
+    },
+    "segments": [
+     [
+      -86399.30834770203,
+      10779.681587219238,
+      "secure"
+     ],
+     [
+      10779.681587219238,
+      118838.93265724182,
+      "bogus"
+     ],
+     [
+      118838.93265724182,
+      161028.41019630432,
+      "secure"
+     ]
+    ],
+    "validated": true
+   },
+   "bind": {
+    "software": "bind",
+    "instances": 3,
+    "lookups": 4335,
+    "secure": 3267,
+    "insecure": 0,
+    "servfail": 1068,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 1068,
+     "fetch": 1068
+    },
+    "first_failure": 10779.92033958435,
+    "last_failure": 100803.83405685425,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 82830,
+     "fetch": 82830
+    },
+    "observed_seconds": {
+     "conservative": 90175.09818077087,
+     "fetch": 90175.09818077087
+    },
+    "recovery_real": {
+     "conservative": 18.00639009475708,
+     "fetch": 18.00639009475708
+    },
+    "inside_without_memory": {
+     "conservative": 1005,
+     "fetch": 1005
+    },
+    "memory": [
+     30,
+     0
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -86399.16973114014,
+      10779.92033958435,
+      "secure"
+     ],
+     [
+      10779.92033958435,
+      100955.01852035522,
+      "bogus"
+     ],
+     [
+      100955.01852035522,
+      160996.66786193848,
+      "secure"
+     ]
+    ],
+    "validated": true
+   }
+  }
+ },
+ {
+  "scenario": "ksk-double-ds-good",
+  "scale": 600.0,
+  "default_timers": false,
+  "plan": "KSK rollover (double-DS), safe timing",
+  "interval": 0.25,
+  "instances": 3,
+  "results": {
+   "unbound": {
+    "software": "unbound",
+    "instances": 3,
+    "lookups": 6198,
+    "secure": 6198,
+    "insecure": 0,
+    "servfail": 0,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "first_failure": null,
+    "last_failure": null,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "observed_seconds": {
+     "conservative": 0.0,
+     "fetch": 0.0
+    },
+    "recovery_real": {},
+    "inside_without_memory": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "memory": [
+     60,
+     1
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -86399.1834640503,
+      254321.51498794556,
+      "secure"
+     ]
+    ],
+    "validated": true
+   },
+   "bind": {
+    "software": "bind",
+    "instances": 3,
+    "lookups": 6198,
+    "secure": 6198,
+    "insecure": 0,
+    "servfail": 0,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "first_failure": null,
+    "last_failure": null,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "observed_seconds": {
+     "conservative": 0.0,
+     "fetch": 0.0
+    },
+    "recovery_real": {},
+    "inside_without_memory": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "memory": [
+     30,
+     0
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -86399.42064285278,
+      254321.41799926758,
+      "secure"
+     ]
+    ],
+    "validated": true
+   }
+  }
+ },
+ {
+  "scenario": "ttl-trap-bad",
+  "scale": 600.0,
+  "default_timers": false,
+  "plan": "TTL trap, lowering the DNSKEY TTL right before a ZSK switch",
+  "interval": 0.25,
+  "instances": 3,
+  "results": {
+   "unbound": {
+    "software": "unbound",
+    "instances": 3,
+    "lookups": 3961,
+    "secure": 3479,
+    "insecure": 0,
+    "servfail": 482,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 482,
+     "fetch": 482
+    },
+    "first_failure": 7271.214151382446,
+    "last_failure": 58021.342849731445,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 83101,
+     "fetch": 83101
+    },
+    "observed_seconds": {
+     "conservative": 50900.5934715271,
+     "fetch": 50900.5934715271
+    },
+    "recovery_real": {
+     "conservative": -47.79776191711426,
+     "fetch": -47.79776191711426
+    },
+    "inside_without_memory": {
+     "conservative": 482,
+     "fetch": 482
+    },
+    "memory": [
+     60,
+     1
+    ],
+    "ede": {
+     "9": 482
+    },
+    "segments": [
+     [
+      -86399.68428611755,
+      7271.214151382446,
+      "secure"
+     ],
+     [
+      7271.214151382446,
+      58171.807622909546,
+      "bogus"
+     ],
+     [
+      58171.807622909546,
+      141909.29946899414,
+      "secure"
+     ]
+    ],
+    "validated": true
+   },
+   "bind": {
+    "software": "bind",
+    "instances": 3,
+    "lookups": 3958,
+    "secure": 2961,
+    "insecure": 0,
+    "servfail": 997,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 997,
+     "fetch": 997
+    },
+    "first_failure": 7184.977340698242,
+    "last_failure": 86307.72743225098,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 83100,
+     "fetch": 83100
+    },
+    "observed_seconds": {
+     "conservative": 79274.13539886475,
+     "fetch": 79274.13539886475
+    },
+    "recovery_real": {
+     "conservative": -0.6537876129150391,
+     "fetch": -0.6537876129150391
+    },
+    "inside_without_memory": {
+     "conservative": 997,
+     "fetch": 997
+    },
+    "memory": [
+     30,
+     0
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -86399.49960708618,
+      7184.977340698242,
+      "secure"
+     ],
+     [
+      7184.977340698242,
+      86459.11273956299,
+      "bogus"
+     ],
+     [
+      86459.11273956299,
+      141908.86073112488,
+      "secure"
+     ]
+    ],
+    "validated": true
+   }
+  }
+ },
+ {
+  "scenario": "ttl-trap-good",
+  "scale": 600.0,
+  "default_timers": false,
+  "plan": "TTL trap avoided, waiting out the old TTL",
+  "interval": 0.25,
+  "instances": 3,
+  "results": {
+   "unbound": {
+    "software": "unbound",
+    "instances": 3,
+    "lookups": 4278,
+    "secure": 4278,
+    "insecure": 0,
+    "servfail": 0,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "first_failure": null,
+    "last_failure": null,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "observed_seconds": {
+     "conservative": 0.0,
+     "fetch": 0.0
+    },
+    "recovery_real": {},
+    "inside_without_memory": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "memory": [
+     60,
+     1
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -86399.41778182983,
+      157769.66471672058,
+      "secure"
+     ]
+    ],
+    "validated": true
+   },
+   "bind": {
+    "software": "bind",
+    "instances": 3,
+    "lookups": 4278,
+    "secure": 4278,
+    "insecure": 0,
+    "servfail": 0,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "first_failure": null,
+    "last_failure": null,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "observed_seconds": {
+     "conservative": 0.0,
+     "fetch": 0.0
+    },
+    "recovery_real": {},
+    "inside_without_memory": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "memory": [
+     30,
+     0
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -86399.11193847656,
+      157770.02062797546,
+      "secure"
+     ]
+    ],
+    "validated": true
+   }
+  }
+ },
+ {
+  "scenario": "zsk-prepublish-bad",
+  "scale": 600.0,
+  "default_timers": false,
+  "plan": "ZSK rollover (pre-publish), new ZSK used immediately",
+  "interval": 0.25,
+  "instances": 3,
+  "results": {
+   "unbound": {
+    "software": "unbound",
+    "instances": 3,
+    "lookups": 7896,
+    "secure": 7892,
+    "insecure": 0,
+    "servfail": 4,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 4,
+     "fetch": 4
+    },
+    "first_failure": 3590.0646686553955,
+    "last_failure": 4046.689224243164,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 83402,
+     "fetch": 3901
+    },
+    "observed_seconds": {
+     "conservative": 607.7273368835449,
+     "fetch": 607.7273368835449
+    },
+    "recovery_real": {
+     "conservative": -137.75551795959473,
+     "fetch": 0.24448204040527344
+    },
+    "inside_without_memory": {
+     "conservative": 4,
+     "fetch": 4
+    },
+    "memory": [
+     60,
+     1
+    ],
+    "ede": {
+     "9": 4
+    },
+    "segments": [
+     [
+      -86399.17559623718,
+      3590.0646686553955,
+      "secure"
+     ],
+     [
+      3590.0646686553955,
+      4197.79200553894,
+      "bogus"
+     ],
+     [
+      4197.79200553894,
+      141916.53842926025,
+      "secure"
+     ]
+    ],
+    "validated": true
+   },
+   "bind": {
+    "software": "bind",
+    "instances": 3,
+    "lookups": 7894,
+    "secure": 7894,
+    "insecure": 0,
+    "servfail": 0,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "first_failure": null,
+    "last_failure": null,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 83400,
+     "fetch": 3900
+    },
+    "observed_seconds": {
+     "conservative": 0.0,
+     "fetch": 0.0
+    },
+    "recovery_real": {},
+    "inside_without_memory": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "memory": [
+     30,
+     0
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -86399.44281578064,
+      141915.82317352295,
+      "secure"
+     ]
+    ],
+    "validated": true
+   }
+  }
+ },
+ {
+  "scenario": "zsk-prepublish-good",
+  "scale": 600.0,
+  "default_timers": false,
+  "plan": "ZSK rollover (pre-publish), safe timing",
+  "interval": 0.25,
+  "instances": 3,
+  "results": {
+   "unbound": {
+    "software": "unbound",
+    "instances": 3,
+    "lookups": 8658,
+    "secure": 8658,
+    "insecure": 0,
+    "servfail": 0,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "first_failure": null,
+    "last_failure": null,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "observed_seconds": {
+     "conservative": 0.0,
+     "fetch": 0.0
+    },
+    "recovery_real": {},
+    "inside_without_memory": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "memory": [
+     60,
+     1
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -86399.61318969727,
+      161258.12258720398,
+      "secure"
+     ]
+    ],
+    "validated": true
+   },
+   "bind": {
+    "software": "bind",
+    "instances": 3,
+    "lookups": 8658,
+    "secure": 8658,
+    "insecure": 0,
+    "servfail": 0,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "first_failure": null,
+    "last_failure": null,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "observed_seconds": {
+     "conservative": 0.0,
+     "fetch": 0.0
+    },
+    "recovery_real": {},
+    "inside_without_memory": {
+     "conservative": 0,
+     "fetch": 0
+    },
+    "memory": [
+     30,
+     0
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -86399.18904304504,
+      161257.84406661987,
+      "secure"
+     ]
+    ],
+    "validated": true
+   }
+  }
+ }
+]

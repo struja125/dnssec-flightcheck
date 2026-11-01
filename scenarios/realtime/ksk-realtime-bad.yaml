@@ -1,0 +1,32 @@
+name: KSK swapped too early, in real time
+description: >
+  Short TTLs so that the whole change runs in real time, with no compressed clock. The chain of trust
+  fails, so this measures how long resolvers remember a failed chain of trust.
+zone: bank.test.
+delays:
+  propagation: 2s
+  registry: 5s
+margin: 10s
+
+keys:
+  KSK1: {role: ksk, algorithm: ECDSAP256SHA256}
+  KSK2: {role: ksk, algorithm: ECDSAP256SHA256}
+  ZSK1: {role: zsk, algorithm: ECDSAP256SHA256}
+  ZSK2: {role: zsk, algorithm: ECDSAP256SHA256}
+
+initial:
+  ds:     {keys: [KSK1], ttl: 2m}
+  dnskey: {keys: [KSK1, ZSK1], signed_by: [KSK1], ttl: 15s}
+  data:
+    www:  {signed_by: [ZSK1], ttl: 15s}
+
+steps:
+  - name: Submit DS for KSK2
+    at: 0s
+    ds: {keys: [KSK1, KSK2]}
+  - name: Swap KSK1 for KSK2 in the DNSKEY RRset
+    at: 30s
+    dnskey: {keys: [KSK2, ZSK1], signed_by: [KSK2]}
+  - name: Remove the DS for KSK1
+    at: 60s
+    ds: {keys: [KSK2]}

@@ -1,0 +1,15 @@
+FlightCheck real resolvers - Turning DNSSEC off, everything at once (clock x600)
+Unbound 1.26.2 (3 instances): 4034 lookups
+  secure 1218, insecure 1389, SERVFAIL 1427, timeouts 0, other 0
+  really validating: yes
+  first failure T+1h 53s, last T+1d 7h 27m 53s
+  EDE codes: {'9': 1427}
+  conservative: predicted 1d 1h 1m, inside 1427/1427 (without timers 1281/1427), observed 1d 6h 29m 30s, last failure 39 real seconds after the zone became valid
+  fetch: predicted 1d 1h 1m, inside 1427/1427 (without timers 1281/1427), observed 1d 6h 29m 30s, last failure 39 real seconds after the zone became valid
+BIND 9.16.50 (3 instances): 4030 lookups
+  secure 1210, insecure 1751, SERVFAIL 1069, timeouts 0, other 0
+  really validating: yes
+  first failure T+50m 50s, last T+23h 57m 59s
+  EDE codes: -
+  conservative: predicted 1d 1h 30s, inside 1069/1069 (without timers 1069/1069), observed 23h 9m 40s, last failure -6 real seconds after the zone became valid
+  fetch: predicted 1d 1h 30s, inside 1069/1069 (without timers 1069/1069), observed 23h 9m 40s, last failure -6 real seconds after the zone became valid

@@ -1,0 +1,33 @@
+name: TTL trap, lowering the DNSKEY TTL right before a ZSK switch
+description: >
+  The DNSKEY TTL is 1 day. The operator lowers it to 5 minutes together with publishing the new
+  ZSK, and switches signing one hour later, expecting the short TTL to apply. Copies of the old
+  DNSKEY RRset were cached with the old 1-day TTL and stay in caches for up to a day.
+zone: bank.test.
+start: 2026-11-02T12:00:00Z
+delays:
+  propagation: 5m
+margin: 1h
+
+keys:
+  KSK1: {role: ksk, algorithm: ECDSAP256SHA256}
+  ZSK1: {role: zsk, algorithm: ECDSAP256SHA256}
+  ZSK2: {role: zsk, algorithm: ECDSAP256SHA256}
+
+initial:
+  ds:     {keys: [KSK1], ttl: 1d}
+  dnskey: {keys: [KSK1, ZSK1], signed_by: [KSK1], ttl: 1d}
+  data:
+    www:  {signed_by: [ZSK1], ttl: 1h}
+
+steps:
+  - name: Lower the DNSKEY TTL to 5m and publish ZSK2
+    at: 0h
+    dnskey: {keys: [KSK1, ZSK1, ZSK2], ttl: 5m}
+  - name: Sign with ZSK2
+    at: 1h
+    data:
+      www: {signed_by: [ZSK2]}
+  - name: Remove ZSK1
+    at: 3h
+    dnskey: {keys: [KSK1, ZSK2]}

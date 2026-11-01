@@ -1,0 +1,35 @@
+name: KSK rollover (double-DS), safe timing
+description: >
+  Same rollover as ksk-double-ds-bad, but each step waits until the previous state has expired
+  from every cache: the KSK swap waits for the DS TTL plus the registry delay, and the old DS is
+  removed only after the old DNSKEY RRset has expired.
+zone: bank.test.
+start: 2026-11-02T12:00:00Z
+delays:
+  propagation: 5m
+  registry: 1h
+resolver:
+  max_cache_ttl: 7d
+margin: 1h
+
+keys:
+  KSK1: {role: ksk, algorithm: ECDSAP256SHA256}
+  KSK2: {role: ksk, algorithm: ECDSAP256SHA256}
+  ZSK1: {role: zsk, algorithm: ECDSAP256SHA256}
+
+initial:
+  ds:     {keys: [KSK1], ttl: 1d}
+  dnskey: {keys: [KSK1, ZSK1], signed_by: [KSK1], ttl: 1h}
+  data:
+    www:  {signed_by: [ZSK1], ttl: 1h}
+
+steps:
+  - name: Submit DS for KSK2
+    at: 0h
+    ds: {keys: [KSK1, KSK2]}
+  - name: Swap KSK1 for KSK2 in the DNSKEY RRset
+    at: 26h
+    dnskey: {keys: [KSK2, ZSK1], signed_by: [KSK2]}
+  - name: Remove the DS for KSK1
+    at: 28h
+    ds: {keys: [KSK2]}

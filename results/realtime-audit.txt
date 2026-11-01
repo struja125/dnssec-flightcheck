@@ -1,0 +1,29 @@
+netlab-realtime ksk-realtime-bad
+  unbound: window without timers [(30, 125)], with timers [(30, 185)]
+    14808 lookups, 950 failures (0 timeouts), inside without timers 950, with timers 950
+    per instance (first, last, count): {'unbound-2': (39, 99, 237), 'unbound-3': (44, 104, 237), 'unbound-4': (49, 109, 238), 'unbound-5': (54, 114, 238)}
+  bind: window without timers [(30, 125)], with timers [(30, 155)]
+    14808 lookups, 960 failures (0 timeouts), inside without timers 930, with timers 960
+    per instance (first, last, count): {'bind-0': (44, 135, 360), 'bind-3': (44, 74, 120), 'bind-4': (34, 95, 240), 'bind-5': (39, 100, 240)}
+netlab-realtime ttl-trap-realtime-bad
+  unbound: window without timers [(20, 122)], with timers [(20, 182)]
+    14734 lookups, 1664 failures (0 timeouts), inside without timers 1468, with timers 1664
+    per instance (first, last, count): {'unbound-0': (29, 149, 475), 'unbound-2': (29, 89, 238), 'unbound-3': (29, 89, 238), 'unbound-4': (29, 89, 238), 'unbound-5': (29, 149, 475)}
+  bind: window without timers [(20, 122)], with timers [(20, 123)]
+    14733 lookups, 996 failures (0 timeouts), inside without timers 996, with timers 996
+    per instance (first, last, count): {'bind-0': (29, 119, 356), 'bind-2': (29, 39, 40), 'bind-3': (29, 59, 120), 'bind-4': (29, 79, 200), 'bind-5': (29, 100, 280)}
+netlab-realtime2 ksk-realtime-bad
+  unbound: window without timers [(30, 125)], with timers [(30, 185)]
+    14809 lookups, 952 failures (0 timeouts), inside without timers 952, with timers 952
+    per instance (first, last, count): {'unbound-2': (40, 99, 238), 'unbound-3': (45, 105, 238), 'unbound-4': (50, 109, 238), 'unbound-5': (55, 115, 238)}
+  bind: window without timers [(30, 125)], with timers [(30, 155)]
+    14806 lookups, 960 failures (0 timeouts), inside without timers 927, with timers 960
+    per instance (first, last, count): {'bind-0': (45, 135, 360), 'bind-3': (45, 75, 120), 'bind-4': (35, 95, 240), 'bind-5': (40, 100, 240)}
+netlab-realtime2 ttl-trap-realtime-bad
+  unbound: window without timers [(20, 122)], with timers [(20, 182)]
+    14739 lookups, 1189 failures (0 timeouts), inside without timers 1088, with timers 1189
+    per instance (first, last, count): {'unbound-2': (30, 89, 237), 'unbound-3': (30, 89, 238), 'unbound-4': (30, 90, 238), 'unbound-5': (30, 150, 476)}
+  bind: window without timers [(20, 122)], with timers [(20, 123)]
+    14733 lookups, 996 failures (0 timeouts), inside without timers 996, with timers 996
+    per instance (first, last, count): {'bind-0': (30, 120, 356), 'bind-2': (30, 40, 40), 'bind-3': (30, 60, 120), 'bind-4': (30, 80, 200), 'bind-5': (30, 100, 280)}
+{'lookups': 118170, 'failures': 8667, 'inside_without_timers': 8307, 'inside_with_timers': 8667}

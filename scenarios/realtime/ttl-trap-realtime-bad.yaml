@@ -1,0 +1,30 @@
+name: ZSK used before the old DNSKEY RRset expired, in real time
+description: >
+  Short TTLs so that the whole change runs in real time, with no compressed clock. The answers fail
+  while the chain of trust stays valid, so this measures how long resolvers remember a failed answer.
+zone: bank.test.
+delays:
+  propagation: 2s
+  registry: 5s
+margin: 10s
+
+keys:
+  KSK1: {role: ksk, algorithm: ECDSAP256SHA256}
+  KSK2: {role: ksk, algorithm: ECDSAP256SHA256}
+  ZSK1: {role: zsk, algorithm: ECDSAP256SHA256}
+  ZSK2: {role: zsk, algorithm: ECDSAP256SHA256}
+
+initial:
+  ds:     {keys: [KSK1], ttl: 2m}
+  dnskey: {keys: [KSK1, ZSK1], signed_by: [KSK1], ttl: 2m}
+  data:
+    www:  {signed_by: [ZSK1], ttl: 10s}
+
+steps:
+  - name: Lower the DNSKEY TTL and publish ZSK2
+    at: 0s
+    dnskey: {keys: [KSK1, ZSK1, ZSK2], ttl: 5s}
+  - name: Sign with ZSK2
+    at: 20s
+    data:
+      www: {signed_by: [ZSK2]}

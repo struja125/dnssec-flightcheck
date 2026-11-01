@@ -1,0 +1,139 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>FlightCheck: Turning DNSSEC on, DS submitted together with signing</title><style>
+:root {
+  --bg: #f6f7f9; --card: #ffffff; --ink: #18202b; --muted: #5d6877; --line: #dde2e8;
+  --accent: #0b6e8a; --ok: #2f9e6e; --bad: #d64545; --warn: #d99a20;
+  --ds: #7a5cc4; --dnskey: #2f6fd1; --data: #138a8a; --band: rgba(214, 69, 69, 0.08);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12161c; --card: #1a2028; --ink: #e8edf3; --muted: #9aa6b4; --line: #2c3540;
+    --accent: #4fb3cf; --ok: #3fbf85; --bad: #ef6464; --warn: #e8b04a;
+    --ds: #a58bea; --dnskey: #6a9cf0; --data: #3fbcbc; --band: rgba(239, 100, 100, 0.12);
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.5 system-ui, "Segoe UI", Roboto, Arial, sans-serif; }
+main { max-width: 1160px; margin: 0 auto; padding: 28px 20px 48px; }
+header { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: flex-end; justify-content: space-between; }
+.brand { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+h1 { margin: 2px 0 0; font-size: 26px; line-height: 1.2; }
+.meta { color: var(--muted); font-size: 13.5px; margin-top: 6px; }
+.verdict { padding: 10px 16px; border-radius: 10px; font-weight: 700; font-size: 17px; color: #fff; }
+.verdict small { display: block; font-weight: 500; font-size: 13px; opacity: .92; }
+.verdict.ok { background: var(--ok); } .verdict.bad { background: var(--bad); }
+section { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; margin-top: 18px; }
+h2 { font-size: 16px; margin: 0 0 12px; }
+p.desc { margin: 10px 0 0; color: var(--muted); max-width: 900px; }
+.timeline { width: 100%; height: auto; display: block; color: var(--ink); }
+.timeline .row-label { font-size: 12.5px; fill: var(--ink); font-weight: 600; }
+.timeline .bar.ds { fill: var(--ds); } .timeline .bar.dnskey { fill: var(--dnskey); } .timeline .bar.data { fill: var(--data); }
+.timeline .tail { opacity: .55; }
+.timeline .hatch-ds { fill: var(--ds); } .timeline .hatch-dnskey { fill: var(--dnskey); } .timeline .hatch-data { fill: var(--data); }
+.timeline .bar-text { font-size: 11px; fill: #fff; font-weight: 600; pointer-events: none; paint-order: stroke; stroke: rgba(0,0,0,.25); stroke-width: 2px; }
+.timeline .status.ok { fill: var(--ok); } .timeline .status.bad { fill: var(--bad); } .timeline .status.insecure { fill: var(--warn); } .timeline .status.recovering { fill: var(--bad); opacity: .5; }
+.timeline .status.measured-bg { fill: var(--line); }
+.timeline .band { fill: var(--band); }
+.timeline .step-line { stroke: var(--muted); stroke-dasharray: 3 4; stroke-width: 1; }
+.timeline .step-dot circle { fill: var(--accent); } .timeline .step-dot text { fill: #fff; font-size: 11px; font-weight: 700; }
+.timeline .axis, .timeline .tick { stroke: var(--muted); }
+.timeline .tick-text { font-size: 11px; fill: var(--muted); } .timeline .tick-sub { font-size: 10px; fill: var(--muted); opacity: .8; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+.legend i { display: inline-block; width: 22px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+.steps { margin: 12px 0 0; padding-left: 0; list-style: none; display: grid; gap: 4px; }
+.steps li { display: grid; grid-template-columns: 26px 120px 1fr; gap: 8px; align-items: baseline; font-size: 14px; }
+.steps .n { background: var(--accent); color: #fff; border-radius: 50%; width: 20px; height: 20px; font-size: 11px;
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 700; }
+.steps .t { color: var(--muted); font-variant-numeric: tabular-nums; }
+.failure { border-left: 4px solid var(--bad); padding: 8px 12px; margin: 10px 0; background: var(--band); border-radius: 0 8px 8px 0; }
+.failure .when { font-weight: 700; color: var(--bad); }
+.failure .why { margin-top: 4px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tag { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 12px; font-weight: 600; }
+.tag.ok { background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok); }
+.tag.move { background: color-mix(in srgb, var(--warn) 22%, transparent); color: var(--warn); }
+.tag.bad { background: color-mix(in srgb, var(--bad) 18%, transparent); color: var(--bad); }
+.note { color: var(--muted); font-size: 13.5px; }
+ul.lints { margin: 0; padding-left: 18px; } ul.lints li { margin: 4px 0; }
+details { margin-top: 12px; } summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+pre { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow-x: auto; font-size: 12.5px; }
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-top: 4px; }
+.metric { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+.metric b { display: block; font-size: 20px; } .metric span { color: var(--muted); font-size: 12.5px; }
+footer { color: var(--muted); font-size: 12.5px; margin-top: 22px; }
+@media (max-width: 700px) {
+  main { padding: 18px 12px 36px; } h1 { font-size: 21px; }
+  .steps li { grid-template-columns: 26px 1fr; } .steps .t { grid-column: 2; }
+}
+</style></head><body><main><header><div><div class='brand'>DNSSEC FlightCheck</div><h1>Turning DNSSEC on, DS submitted together with signing</h1><div class='meta'>Zone <b>bank.test.</b> · conservative model · propagation 5m · registry delay 10m · max cache TTL 7d · start 2026-11-02 12:00 UTC</div></div><div class="verdict bad">UNSAFE<small>SERVFAIL for up to 56m</small></div></header><p class='desc'>The zone is signed and the DS is submitted in the same step through a fast registrar. Validators behind caches that still hold the unsigned DNSKEY answer or unsigned data see a secure delegation without matching keys or signatures.</p><section><h2>Timeline</h2><svg class="timeline" viewBox="0 0 1100 394" role="img" aria-label="Timeline of RRset versions and validation status"><defs><pattern id="hatch-ds" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect class="hatch-ds" width="3" height="6"/></pattern><pattern id="hatch-dnskey" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect class="hatch-dnskey" width="3" height="6"/></pattern><pattern id="hatch-data" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect class="hatch-data" width="3" height="6"/></pattern></defs><rect class="band" x="210.3" y="30" width="55.2" height="324"/><line class="step-line" x1="200.2" y1="30" x2="200.2" y2="324"/><g class="step-dot"><title>Sign the zone and submit the DS at T+0</title><circle cx="200.2" cy="16" r="10"/><text x="200.2" y="20" text-anchor="middle">1</text></g><text class="row-label" x="184" y="66" text-anchor="end">DS (parent)</text><g><title>DS v0: no DS (insecure)
+served before the plan -&gt; T+10m
+can stay cached until T+1h 10m (TTL 1h)
+introduced by: initial state</title><rect class="tail" fill="url(#hatch-ds)" x="210.3" y="44" width="60.2" height="16" rx="2"/><rect class="bar ds" x="196.0" y="44" width="14.3" height="16" rx="2"/><text class="bar-text" x="201.0" y="56">v0</text></g><g><title>DS v1: KSK1
+served T+10m -&gt; never
+can stay cached until never (TTL 1d)
+introduced by: Sign the zone and submit the DS</title><rect class="bar ds" x="210.3" y="64" width="873.7" height="16" rx="2"/><text class="bar-text" x="215.3" y="76">v1  KSK1</text></g><text class="row-label" x="184" y="116" text-anchor="end">DNSKEY</text><g><title>DNSKEY v0: no keys (unsigned)
+served before the plan -&gt; T+5m
+can stay cached until T+1h 5m (TTL 1h)
+introduced by: initial state</title><rect class="tail" fill="url(#hatch-dnskey)" x="205.2" y="94" width="60.2" height="16" rx="2"/><rect class="bar dnskey" x="196.0" y="94" width="9.2" height="16" rx="2"/><text class="bar-text" x="201.0" y="106">v0</text></g><g><title>DNSKEY v1: KSK1 ZSK1  ·  sig KSK1
+served T+0 -&gt; never
+can stay cached until never (TTL 1h)
+introduced by: Sign the zone and submit the DS</title><rect class="bar dnskey" x="200.2" y="114" width="883.8" height="16" rx="2"/><text class="bar-text" x="205.2" y="126">v1  KSK1 ZSK1  ·  sig KSK1</text></g><text class="row-label" x="184" y="166" text-anchor="end">www</text><g><title>www v0: unsigned
+served before the plan -&gt; T+5m
+can stay cached until T+1h 5m (TTL 1h)
+introduced by: initial state</title><rect class="tail" fill="url(#hatch-data)" x="205.2" y="144" width="60.2" height="16" rx="2"/><rect class="bar data" x="196.0" y="144" width="9.2" height="16" rx="2"/><text class="bar-text" x="201.0" y="156">v0  unsigned</text></g><g><title>www v1: sig ZSK1
+served T+0 -&gt; never
+can stay cached until never (TTL 1h)
+introduced by: Sign the zone and submit the DS</title><rect class="bar data" x="200.2" y="164" width="883.8" height="16" rx="2"/><text class="bar-text" x="205.2" y="176">v1  sig ZSK1</text></g><text class="row-label" x="184" y="211" text-anchor="end">Predicted: conservative</text><rect class="status insecure" x="196.0" y="198" width="14.3" height="18"><title>insecure: before the plan -&gt; T+10m</title></rect><rect class="status bad" x="210.3" y="198" width="55.2" height="18"><title>bogus: T+10m -&gt; T+1h 5m</title></rect><rect class="status recovering" x="265.5" y="198" width="1.0" height="18"><title>recovering: T+1h 5m -&gt; T+1h 6m</title></rect><rect class="status insecure" x="266.5" y="198" width="4.0" height="18"><title>partly-insecure: T+1h 6m -&gt; T+1h 10m</title></rect><rect class="status ok" x="270.5" y="198" width="813.5" height="18"><title>secure: T+1h 10m -&gt; never</title></rect><text class="row-label" x="184" y="237" text-anchor="end">Predicted: fetch</text><rect class="status insecure" x="196.0" y="224" width="14.3" height="18"><title>insecure: before the plan -&gt; T+10m</title></rect><rect class="status insecure" x="210.3" y="224" width="60.2" height="18"><title>partly-insecure: T+10m -&gt; T+1h 10m</title></rect><rect class="status ok" x="270.5" y="224" width="813.5" height="18"><title>secure: T+1h 10m -&gt; never</title></rect><text class="row-label" x="184" y="263" text-anchor="end">Predicted: unbound, this clock</text><rect class="status insecure" x="196.0" y="250" width="14.3" height="18"><title>insecure: before the plan -&gt; T+10m</title></rect><rect class="status insecure" x="210.3" y="250" width="60.2" height="18"><title>partly-insecure: T+10m -&gt; T+1h 10m</title></rect><rect class="status ok" x="270.5" y="250" width="813.5" height="18"><title>secure: T+1h 10m -&gt; never</title></rect><text class="row-label" x="184" y="289" text-anchor="end">Predicted: bind, this clock</text><rect class="status insecure" x="196.0" y="276" width="14.3" height="18"><title>insecure: before the plan -&gt; T+10m</title></rect><rect class="status insecure" x="210.3" y="276" width="60.2" height="18"><title>partly-insecure: T+10m -&gt; T+1h 10m</title></rect><rect class="status ok" x="270.5" y="276" width="813.5" height="18"><title>secure: T+1h 10m -&gt; never</title></rect><text class="row-label" x="184" y="315" text-anchor="end">Unbound 1.26.2 x3</text><rect class="status measured-bg" x="196" y="302" width="888" height="18"/><rect class="status insecure" x="196.0" y="302" width="65.1" height="18"><title>measured insecure: T-1d -&gt; T+1h 40s</title></rect><rect class="status insecure" x="261.1" y="302" width="1.5" height="18"><title>measured partly-insecure: T+1h 40s -&gt; T+1h 1m 16s</title></rect><rect class="status ok" x="261.7" y="302" width="822.3" height="18"><title>measured secure: T+1h 1m 16s -&gt; T+14h 40m 35s</title></rect><text class="row-label" x="184" y="341" text-anchor="end">BIND 9.16.50 x3</text><rect class="status measured-bg" x="196" y="328" width="888" height="18"/><rect class="status insecure" x="196.0" y="328" width="65.1" height="18"><title>measured insecure: T-1d -&gt; T+1h 41s</title></rect><rect class="status insecure" x="261.1" y="328" width="1.5" height="18"><title>measured partly-insecure: T+1h 41s -&gt; T+1h 1m 16s</title></rect><rect class="status ok" x="261.7" y="328" width="822.3" height="18"><title>measured secure: T+1h 1m 16s -&gt; T+14h 40m 35s</title></rect><line class="axis" x1="196" y1="356" x2="1084" y2="356"/><line class="tick" x1="200.2" y1="354" x2="200.2" y2="360"/><text class="tick-text" x="200.2" y="373" text-anchor="middle">T+0</text><text class="tick-sub" x="200.2" y="386" text-anchor="middle">02 Nov 12:00</text><line class="tick" x1="320.7" y1="354" x2="320.7" y2="360"/><text class="tick-text" x="320.7" y="373" text-anchor="middle">T+2h</text><text class="tick-sub" x="320.7" y="386" text-anchor="middle">02 Nov 14:00</text><line class="tick" x1="441.1" y1="354" x2="441.1" y2="360"/><text class="tick-text" x="441.1" y="373" text-anchor="middle">T+4h</text><text class="tick-sub" x="441.1" y="386" text-anchor="middle">02 Nov 16:00</text><line class="tick" x1="561.5" y1="354" x2="561.5" y2="360"/><text class="tick-text" x="561.5" y="373" text-anchor="middle">T+6h</text><text class="tick-sub" x="561.5" y="386" text-anchor="middle">02 Nov 18:00</text><line class="tick" x1="682.0" y1="354" x2="682.0" y2="360"/><text class="tick-text" x="682.0" y="373" text-anchor="middle">T+8h</text><text class="tick-sub" x="682.0" y="386" text-anchor="middle">02 Nov 20:00</text><line class="tick" x1="802.4" y1="354" x2="802.4" y2="360"/><text class="tick-text" x="802.4" y="373" text-anchor="middle">T+10h</text><text class="tick-sub" x="802.4" y="386" text-anchor="middle">02 Nov 22:00</text><line class="tick" x1="922.8" y1="354" x2="922.8" y2="360"/><text class="tick-text" x="922.8" y="373" text-anchor="middle">T+12h</text><text class="tick-sub" x="922.8" y="386" text-anchor="middle">03 Nov 00:00</text><line class="tick" x1="1043.3" y1="354" x2="1043.3" y2="360"/><text class="tick-text" x="1043.3" y="373" text-anchor="middle">T+14h</text><text class="tick-sub" x="1043.3" y="386" text-anchor="middle">03 Nov 02:00</text></svg><div class='legend'><span><i style='background:var(--dnskey)'></i>served by the authoritative servers</span><span><i style='background:repeating-linear-gradient(135deg,var(--dnskey) 0 3px,transparent 3px 6px)'></i>can still be in resolver caches</span><span><i style='background:var(--ok)'></i>validates</span><span><i style='background:var(--bad)'></i>bogus (SERVFAIL)</span><span><i style='background:var(--bad);opacity:.5'></i>valid again, resolvers still remember the failure</span><span><i style='background:var(--warn)'></i>insecure for some or all resolvers</span></div><ol class='steps'><li><span class='n'>1</span><span class='t'>T+0</span><span>Sign the zone and submit the DS</span></li></ol></section><section><h2>Lab measurement</h2><div class='metrics'><div class='metric'><b>0 failures</b>Unbound 1.26.2: failures inside the fetch prediction<br><span>2,191 lookups, validating: yes, EDE -</span></div><div class='metric'><b>0 failures</b>BIND 9.16.50: failures inside the fetch prediction<br><span>2,191 lookups, validating: yes, EDE -</span></div><div class='metric'><b>x600</b>clock<br><span>one real second = 10m of plan time</span></div></div></section><section><h2>What breaks</h2><div class='failure'><div class='when'>T+10m (Mon 02 Nov 12:10 UTC) → T+1h 5m (Mon 02 Nov 13:05 UTC) · 55m</div><div class='why'>Resolvers may still hold www v0 in their cache until T+1h 5m (Mon 02 Nov 13:05 UTC), but from T+10m (Mon 02 Nov 12:10 UTC) they validate it against DS v1 (step &quot;Sign the zone and submit the DS&quot;). www becomes bogus: the RRset carries no signatures although the delegation is secure. Resolvers can keep answering SERVFAIL for up to 1m after that.</div></div><div class='failure'><div class='when'>T+10m (Mon 02 Nov 12:10 UTC) → T+1h 5m (Mon 02 Nov 13:05 UTC) · 55m</div><div class='why'>Resolvers may still hold DNSKEY v0 in their cache until T+1h 5m (Mon 02 Nov 13:05 UTC), but from T+10m (Mon 02 Nov 12:10 UTC) they validate it against DS v1 (step &quot;Sign the zone and submit the DS&quot;). DNSKEY becomes bogus: the DS RRset points to {KSK1} but the zone publishes no DNSKEY at all. Resolvers can keep answering SERVFAIL for up to 1m after that.</div></div><p class='note'>Resolver profile: worst. A failed chain of trust is remembered for 1m and a failed answer for 1m. The zone itself cannot be validated for 55m.</p></section><section><h2>Safe schedule</h2><ul class='lints'><li>Split &quot;Sign the zone and submit the DS&quot;: the change to DS must wait until the old data has expired from caches, so it moves to a new step 1h 55m later</li></ul><table><thead><tr><th>Step</th><th>Planned</th><th>Earliest safe</th><th>Recommended</th><th></th></tr></thead><tbody><tr><td>Sign the zone and submit the DS</td><td class='num'>T+0</td><td class='num'>T+0</td><td class='num'>T+0</td><td><span class='tag ok'>ok</span></td></tr><tr><td>Sign the zone and submit the DS (part 2)</td><td class='num'>T+1h 55m</td><td class='num'>T+1h 55m</td><td class='num'>T+1h 55m</td><td><span class='tag ok'>ok</span></td></tr></tbody></table><p class='note'>Recommended = earliest safe moment + 1h safety margin. The corrected plan is <b>safe</b> in the conservative model.</p><details><summary>Corrected plan (YAML)</summary><pre>name: Turning DNSSEC on, DS submitted together with signing
+description: &#x27;The zone is signed and the DS is submitted in the same step through
+  a fast registrar. Validators behind caches that still hold the unsigned DNSKEY answer
+  or unsigned data see a secure delegation without matching keys or signatures.
+
+  &#x27;
+zone: bank.test.
+start: 2026-11-02 12:00:00+00:00
+delays:
+  propagation: 5m
+  registry: 10m
+margin: 1h
+keys:
+  KSK1:
+    role: ksk
+    algorithm: ECDSAP256SHA256
+  ZSK1:
+    role: zsk
+    algorithm: ECDSAP256SHA256
+initial:
+  ds:
+    keys: []
+    ttl: 1h
+  dnskey:
+    keys: []
+    signed_by: []
+    ttl: 1h
+  data:
+    www:
+      signed_by: []
+      ttl: 1h
+steps:
+- name: Sign the zone and submit the DS
+  at: 0s
+  dnskey:
+    keys:
+    - KSK1
+    - ZSK1
+    signed_by:
+    - KSK1
+  data:
+    www:
+      signed_by:
+      - ZSK1
+- name: Sign the zone and submit the DS (part 2)
+  at: 1h55m
+  ds:
+    keys:
+    - KSK1
+    ttl: 1d
+</pre></details></section><section><h2>Notes</h2><ul class='lints'><li><b>info</b> · plan: DS changes take effect 10m after submission (registry delay)</li></ul></section><footer>Worst-case analysis: a version can stay in a resolver's cache for a full TTL after the last authoritative server stopped serving it. Conservative model = RFC 7583 assumptions (any cached versions may be combined, as for validators behind caches); fetch model = a validating resolver that validates on fetch and trusts its cache.</footer></main></body></html>

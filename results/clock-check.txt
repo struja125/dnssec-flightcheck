@@ -1,0 +1,37 @@
+# Clock check: KSK scenario at two clock speeds
+wrote netlab-x600\report.html
+wrote netlab-x600\result.json
+KSK rollover (double-DS), KSK swapped too early: 6 resolvers, clock x600, about 419s
+FlightCheck real resolvers - KSK rollover (double-DS), KSK swapped too early (clock x600)
+Unbound 1.26.2 (3 instances): 4344 lookups
+  secure 2920, insecure 0, SERVFAIL 1424, timeouts 0, other 0
+  really validating: yes
+  first failure T+2h 56m 28s, last T+1d 9h 35m 10s
+  EDE codes: {'6': 1424}
+  conservative: predicted 23h, inside 1424/1424, observed 22h 3m 32s, recovered 52 real seconds after the predicted end
+  fetch: predicted 23h, inside 1424/1424, observed 22h 3m 32s, recovered 52 real seconds after the predicted end
+BIND 9.16.50 (3 instances): 4338 lookups
+  secure 3267, insecure 0, SERVFAIL 1071, timeouts 0, other 0
+  really validating: yes
+  first failure T+2h 56m 27s, last T+1d 3h 56m 34s
+  EDE codes: -
+  conservative: predicted 23h, inside 1071/1071, observed 22h 3m 33s, recovered 18 real seconds after the predicted end
+  fetch: predicted 23h, inside 1071/1071, observed 22h 3m 33s, recovered 18 real seconds after the predicted end
+wrote netlab-x300\report.html
+wrote netlab-x300\result.json
+KSK rollover (double-DS), KSK swapped too early: 6 resolvers, clock x300, about 751s
+FlightCheck real resolvers - KSK rollover (double-DS), KSK swapped too early (clock x300)
+Unbound 1.26.2 (3 instances): 7731 lookups
+  secure 5607, insecure 0, SERVFAIL 2124, timeouts 0, other 0
+  really validating: yes
+  first failure T+2h 58m 13s, last T+1d 4h 22m 4s
+  EDE codes: {'6': 2124}
+  conservative: predicted 23h, inside 2124/2124, observed 22h 1m 47s, recovered 40 real seconds after the predicted end
+  fetch: predicted 23h, inside 2124/2124, observed 22h 1m 47s, recovered 40 real seconds after the predicted end
+BIND 9.16.50 (3 instances): 7722 lookups
+  secure 5699, insecure 0, SERVFAIL 2023, timeouts 0, other 0
+  really validating: yes
+  first failure T+2h 57m 54s, last T+1d 1h 28m 47s
+  EDE codes: -
+  conservative: predicted 23h, inside 2023/2023, observed 22h 2m 6s, recovered 6 real seconds after the predicted end
+  fetch: predicted 23h, inside 2023/2023, observed 22h 2m 6s, recovered 6 real seconds after the predicted end

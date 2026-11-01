@@ -1,0 +1,13 @@
+FlightCheck real resolvers - ZSK rollover (pre-publish), new ZSK used immediately (clock x600)
+Unbound 1.26.2 (3 instances): 7896 lookups
+  secure 7892, insecure 0, SERVFAIL 4, timeouts 0, other 0
+  really validating: yes
+  first failure T+59m 50s, last T+1h 7m 27s
+  EDE codes: {'9': 4}
+  conservative: predicted 23h 10m 2s, inside 4/4 (without timers 4/4), observed 10m 8s, last failure -138 real seconds after the zone became valid
+  fetch: predicted 1h 5m 1s, inside 4/4 (without timers 4/4), observed 10m 8s, last failure 0 real seconds after the zone became valid
+BIND 9.16.50 (3 instances): 7894 lookups
+  secure 7894, insecure 0, SERVFAIL 0, timeouts 0, other 0
+  really validating: yes
+  conservative: predicted 23h 10m, inside 0/0 (without timers 0/0), observed 0s
+  fetch: predicted 1h 5m, inside 0/0 (without timers 0/0), observed 0s

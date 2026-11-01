@@ -1,0 +1,105 @@
+# A stable bank.test. network for `flightcheck snapshot`, separate from docker-compose.yml.
+# No steps, no compressed clock, no resolvers and no probe. Steps are in docs/SNAPSHOT-WORKFLOW.md.
+#
+#   docker compose -f docker-compose.bootstrap.yml up --build -d
+#   docker compose -f docker-compose.bootstrap.yml run --rm snapshot
+#   docker compose -f docker-compose.bootstrap.yml down
+#
+# Both Compose files use the same subnet, so stop this one before starting the lab.
+
+name: flightcheck-bootstrap
+
+x-flightcheck: &flightcheck
+  build:
+    context: ../..
+    dockerfile: lab/docker/Dockerfile
+  image: flightcheck:lab
+  volumes:
+    - ./out-snapshot:/lab
+
+x-after-init: &after-init
+  depends_on:
+    init:
+      condition: service_completed_successfully
+
+services:
+  init:
+    <<: *flightcheck
+    network_mode: none
+    volumes:
+      - ./out-snapshot:/lab
+      - ./bootstrap:/bootstrap:ro
+    command:
+      - lab-bootstrap
+      - /bootstrap/bank-test.yaml
+      - --out
+      - /lab/network
+      - --address
+      - root=10.53.0.10,tld=10.53.0.11,ns1=10.53.0.12,ns2=10.53.0.13
+
+  root:
+    <<: [*flightcheck, *after-init]
+    command: [serve, --lab, /lab/network, --role, root, --forever]
+    networks: {labnet: {ipv4_address: 10.53.0.10}}
+
+  tld:
+    <<: [*flightcheck, *after-init]
+    command: [serve, --lab, /lab/network, --role, tld, --forever]
+    networks: {labnet: {ipv4_address: 10.53.0.11}}
+
+  ns1:
+    <<: [*flightcheck, *after-init]
+    command: [serve, --lab, /lab/network, --role, ns1, --forever, --axfr-allow, 10.53.0.31]
+    networks: {labnet: {ipv4_address: 10.53.0.12}}
+
+  ns2:
+    <<: [*flightcheck, *after-init]
+    command: [serve, --lab, /lab/network, --role, ns2, --forever, --axfr-allow, 10.53.0.31]
+    networks: {labnet: {ipv4_address: 10.53.0.13}}
+
+  # Only with `run`: `up` leaves it out because of the profile. It asks over the network, and the
+  # lab directory it can see is used for nothing but writing the snapshot.
+  snapshot:
+    <<: *flightcheck
+    profiles: [collect]
+    command:
+      - snapshot
+      - bank.test.
+      - --server
+      - 10.53.0.12
+      - --server
+      - 10.53.0.13
+      - --parent-server
+      - 10.53.0.11
+      - --query
+      - www.bank.test./A
+      - --query
+      - mail.bank.test./A
+      - --output
+      - /lab/snapshot-bank.yaml
+    networks: {labnet: {ipv4_address: 10.53.0.30}}
+
+  # The only address ns1 and ns2 allow a zone transfer. Root and the TLD never transfer.
+  snapshot-axfr:
+    <<: *flightcheck
+    profiles: [collect]
+    command:
+      - snapshot
+      - bank.test.
+      - --axfr
+      - --server
+      - 10.53.0.12
+      - --server
+      - 10.53.0.13
+      - --parent-server
+      - 10.53.0.11
+      - --output
+      - /lab/snapshot-axfr.yaml
+    networks: {labnet: {ipv4_address: 10.53.0.31}}
+
+networks:
+  labnet:
+    internal: true
+    ipam:
+      config:
+        - subnet: 10.53.0.0/24

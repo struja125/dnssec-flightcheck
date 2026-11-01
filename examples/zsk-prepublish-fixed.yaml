@@ -1,0 +1,66 @@
+name: ZSK rollover (pre-publish), new ZSK used immediately
+description: 'The new ZSK is published and used for signing in the same step, and
+  the old ZSK is removed two hours later. Resolvers that still cache the old DNSKEY
+  RRset cannot validate data signed by the new ZSK, and the mail record (TTL 1 day)
+  keeps old signatures in caches long after the old ZSK is gone.
+
+  '
+zone: bank.test.
+start: 2026-11-02 12:00:00+00:00
+delays:
+  propagation: 5m
+margin: 1h
+keys:
+  KSK1:
+    role: ksk
+    algorithm: ECDSAP256SHA256
+  ZSK1:
+    role: zsk
+    algorithm: ECDSAP256SHA256
+  ZSK2:
+    role: zsk
+    algorithm: ECDSAP256SHA256
+initial:
+  ds:
+    keys:
+    - KSK1
+    ttl: 1d
+  dnskey:
+    keys:
+    - KSK1
+    - ZSK1
+    signed_by:
+    - KSK1
+    ttl: 1h
+  data:
+    www:
+      signed_by:
+      - ZSK1
+      ttl: 1h
+    mail:
+      signed_by:
+      - ZSK1
+      ttl: 1d
+steps:
+- name: Publish ZSK2 and sign with it
+  at: 0s
+  dnskey:
+    keys:
+    - KSK1
+    - ZSK1
+    - ZSK2
+- name: Publish ZSK2 and sign with it (part 2)
+  at: 2h5m
+  data:
+    www:
+      signed_by:
+      - ZSK2
+    mail:
+      signed_by:
+      - ZSK2
+- name: Remove ZSK1
+  at: 1d3h10m
+  dnskey:
+    keys:
+    - KSK1
+    - ZSK2

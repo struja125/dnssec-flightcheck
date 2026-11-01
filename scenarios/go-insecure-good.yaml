@@ -1,0 +1,30 @@
+name: Turning DNSSEC off, DS first
+description: >
+  The DS is removed first; the zone keeps its keys and signatures until the old DS has expired
+  from every cache (registry delay + DS TTL).
+zone: bank.test.
+start: 2026-11-02T12:00:00Z
+delays:
+  propagation: 5m
+  registry: 1h
+margin: 1h
+
+keys:
+  KSK1: {role: ksk, algorithm: ECDSAP256SHA256}
+  ZSK1: {role: zsk, algorithm: ECDSAP256SHA256}
+
+initial:
+  ds:     {keys: [KSK1], ttl: 1d}
+  dnskey: {keys: [KSK1, ZSK1], signed_by: [KSK1], ttl: 1h}
+  data:
+    www:  {signed_by: [ZSK1], ttl: 1h}
+
+steps:
+  - name: Remove the DS
+    at: 0h
+    ds: {keys: [], ttl: 1h}
+  - name: Unsign the zone
+    at: 1d3h
+    dnskey: {keys: [], signed_by: []}
+    data:
+      www: {signed_by: []}

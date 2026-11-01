@@ -1,0 +1,15 @@
+FlightCheck real resolvers - KSK rollover (double-DS), KSK swapped too early (clock x600)
+Unbound 1.26.2 (3 instances): 4343 lookups
+  secure 2919, insecure 0, SERVFAIL 1424, timeouts 0, other 0
+  really validating: yes
+  first failure T+2h 59m 40s, last T+1d 8h 58m 8s
+  EDE codes: {'6': 1424}
+  conservative: predicted 23h 1m, inside 1424/1424 (without timers 1242/1424), observed 1d 6h 59s, last failure 48 real seconds after the zone became valid
+  fetch: predicted 23h 1m, inside 1424/1424 (without timers 1242/1424), observed 1d 6h 59s, last failure 48 real seconds after the zone became valid
+BIND 9.16.50 (3 instances): 4335 lookups
+  secure 3267, insecure 0, SERVFAIL 1068, timeouts 0, other 0
+  really validating: yes
+  first failure T+2h 59m 40s, last T+1d 4h 4s
+  EDE codes: -
+  conservative: predicted 23h 30s, inside 1068/1068 (without timers 1005/1068), observed 1d 1h 2m 55s, last failure 18 real seconds after the zone became valid
+  fetch: predicted 23h 30s, inside 1068/1068 (without timers 1005/1068), observed 1d 1h 2m 55s, last failure 18 real seconds after the zone became valid

@@ -1,0 +1,29 @@
+name: Turning DNSSEC off, everything at once
+description: >
+  Typical before moving to a DNS provider without DNSSEC: the DS is removed and the zone is
+  unsigned in the same step. Resolvers keep the old DS for up to a day and then reject the
+  unsigned zone.
+zone: bank.test.
+start: 2026-11-02T12:00:00Z
+delays:
+  propagation: 5m
+  registry: 1h
+margin: 1h
+
+keys:
+  KSK1: {role: ksk, algorithm: ECDSAP256SHA256}
+  ZSK1: {role: zsk, algorithm: ECDSAP256SHA256}
+
+initial:
+  ds:     {keys: [KSK1], ttl: 1d}
+  dnskey: {keys: [KSK1, ZSK1], signed_by: [KSK1], ttl: 1h}
+  data:
+    www:  {signed_by: [ZSK1], ttl: 1h}
+
+steps:
+  - name: Remove the DS and unsign the zone
+    at: 0h
+    ds: {keys: [], ttl: 1h}
+    dnskey: {keys: [], signed_by: []}
+    data:
+      www: {signed_by: []}

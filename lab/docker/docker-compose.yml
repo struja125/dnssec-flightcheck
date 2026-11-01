@@ -1,0 +1,122 @@
+# Isolated network lab: FlightCheck's authoritative servers + real validating resolvers.
+#
+#   cd lab/docker
+#   PLAN=scenarios/ksk-double-ds-bad.yaml SCALE=600 docker compose up --build -d
+#   docker compose logs -f probe
+#   docker compose wait probe
+#   docker compose down
+#
+# A plan from `flightcheck plan` lives outside the image: copy it to ./out, and give it as PLAN=/lab/candidate.yaml.
+#
+# The report is written to lab/docker/out/report.html. The lab network is `internal`: containers
+# cannot reach the Internet and nothing outside the lab can reach them.
+
+name: flightcheck-lab
+
+x-flightcheck: &flightcheck
+  build:
+    context: ../..
+    dockerfile: lab/docker/Dockerfile
+  image: flightcheck:lab
+  volumes:
+    - ./out:/lab
+
+x-after-init: &after-init
+  depends_on:
+    init:
+      condition: service_completed_successfully
+
+services:
+  init:
+    <<: *flightcheck
+    network_mode: none
+    command:
+      - lab-init
+      - ${PLAN:-scenarios/ksk-double-ds-bad.yaml}
+      - --out
+      - /lab
+      - --scale
+      - "${SCALE:-600}"
+      - --start-in
+      - "25"
+      - --address
+      - root=10.53.0.10,tld=10.53.0.11,ns1=10.53.0.12,ns2=10.53.0.13
+
+  root:
+    <<: [*flightcheck, *after-init]
+    command: [serve, --lab, /lab, --role, root]
+    networks: {labnet: {ipv4_address: 10.53.0.10}}
+
+  tld:
+    <<: [*flightcheck, *after-init]
+    command: [serve, --lab, /lab, --role, tld]
+    networks: {labnet: {ipv4_address: 10.53.0.11}}
+
+  ns1:
+    <<: [*flightcheck, *after-init]
+    command: [serve, --lab, /lab, --role, ns1]
+    networks: {labnet: {ipv4_address: 10.53.0.12}}
+
+  ns2:
+    <<: [*flightcheck, *after-init]
+    command: [serve, --lab, /lab, --role, ns2]
+    networks: {labnet: {ipv4_address: 10.53.0.13}}
+
+  unbound:
+    <<: *after-init
+    build: {context: ., dockerfile: Dockerfile.unbound}
+    volumes: ["./out:/lab:ro"]
+    networks: {labnet: {ipv4_address: 10.53.0.20}}
+
+  bind:
+    <<: *after-init
+    build: {context: ., dockerfile: Dockerfile.bind}
+    volumes: ["./out:/lab:ro"]
+    networks: {labnet: {ipv4_address: 10.53.0.21}}
+
+  emu:
+    <<: [*flightcheck, *after-init]
+    command: [emu-resolver, --lab, /lab, --listen, 0.0.0.0]
+    networks: {labnet: {ipv4_address: 10.53.0.22}}
+
+  emu-cache:
+    <<: [*flightcheck, *after-init]
+    command: [emu-resolver, --lab, /lab, --listen, 0.0.0.0, --behind-cache]
+    networks: {labnet: {ipv4_address: 10.53.0.23}}
+
+  probe:
+    <<: *flightcheck
+    depends_on:
+      init: {condition: service_completed_successfully}
+      root: {condition: service_started}
+      tld: {condition: service_started}
+      ns1: {condition: service_started}
+      ns2: {condition: service_started}
+      unbound: {condition: service_started}
+      bind: {condition: service_started}
+      emu: {condition: service_started}
+      emu-cache: {condition: service_started}
+    command:
+      - probe
+      - --lab
+      - /lab
+      - --resolver
+      - unbound=10.53.0.20
+      - --resolver
+      - bind=10.53.0.21
+      - --resolver
+      - emulated=10.53.0.22
+      - --resolver
+      - emulated-behind-cache=10.53.0.23
+      - --html
+      - /lab/report.html
+      - --json
+      - /lab/probe.json
+    networks: {labnet: {ipv4_address: 10.53.0.30}}
+
+networks:
+  labnet:
+    internal: true
+    ipam:
+      config:
+        - subnet: 10.53.0.0/24

@@ -1,0 +1,11 @@
+FlightCheck real resolvers - Turning DNSSEC on, DS submitted together with signing (clock x600)
+Unbound 1.26.2 (3 instances): 2191 lookups
+  secure 973, insecure 1218, SERVFAIL 0, timeouts 0, other 0
+  really validating: yes
+  conservative: predicted 56m, inside 0/0 (without timers 0/0), observed 0s
+  fetch: predicted 0s, inside 0/0 (without timers 0/0)
+BIND 9.16.50 (3 instances): 2191 lookups
+  secure 973, insecure 1218, SERVFAIL 0, timeouts 0, other 0
+  really validating: yes
+  conservative: predicted 55m 30s, inside 0/0 (without timers 0/0), observed 0s
+  fetch: predicted 0s, inside 0/0 (without timers 0/0)

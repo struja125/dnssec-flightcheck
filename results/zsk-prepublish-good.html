@@ -1,0 +1,160 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>FlightCheck: ZSK rollover (pre-publish), safe timing</title><style>
+:root {
+  --bg: #f6f7f9; --card: #ffffff; --ink: #18202b; --muted: #5d6877; --line: #dde2e8;
+  --accent: #0b6e8a; --ok: #2f9e6e; --bad: #d64545; --warn: #d99a20;
+  --ds: #7a5cc4; --dnskey: #2f6fd1; --data: #138a8a; --band: rgba(214, 69, 69, 0.08);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12161c; --card: #1a2028; --ink: #e8edf3; --muted: #9aa6b4; --line: #2c3540;
+    --accent: #4fb3cf; --ok: #3fbf85; --bad: #ef6464; --warn: #e8b04a;
+    --ds: #a58bea; --dnskey: #6a9cf0; --data: #3fbcbc; --band: rgba(239, 100, 100, 0.12);
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.5 system-ui, "Segoe UI", Roboto, Arial, sans-serif; }
+main { max-width: 1160px; margin: 0 auto; padding: 28px 20px 48px; }
+header { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: flex-end; justify-content: space-between; }
+.brand { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+h1 { margin: 2px 0 0; font-size: 26px; line-height: 1.2; }
+.meta { color: var(--muted); font-size: 13.5px; margin-top: 6px; }
+.verdict { padding: 10px 16px; border-radius: 10px; font-weight: 700; font-size: 17px; color: #fff; }
+.verdict small { display: block; font-weight: 500; font-size: 13px; opacity: .92; }
+.verdict.ok { background: var(--ok); } .verdict.bad { background: var(--bad); }
+section { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; margin-top: 18px; }
+h2 { font-size: 16px; margin: 0 0 12px; }
+p.desc { margin: 10px 0 0; color: var(--muted); max-width: 900px; }
+.timeline { width: 100%; height: auto; display: block; color: var(--ink); }
+.timeline .row-label { font-size: 12.5px; fill: var(--ink); font-weight: 600; }
+.timeline .bar.ds { fill: var(--ds); } .timeline .bar.dnskey { fill: var(--dnskey); } .timeline .bar.data { fill: var(--data); }
+.timeline .tail { opacity: .55; }
+.timeline .hatch-ds { fill: var(--ds); } .timeline .hatch-dnskey { fill: var(--dnskey); } .timeline .hatch-data { fill: var(--data); }
+.timeline .bar-text { font-size: 11px; fill: #fff; font-weight: 600; pointer-events: none; paint-order: stroke; stroke: rgba(0,0,0,.25); stroke-width: 2px; }
+.timeline .status.ok { fill: var(--ok); } .timeline .status.bad { fill: var(--bad); } .timeline .status.insecure { fill: var(--warn); } .timeline .status.recovering { fill: var(--bad); opacity: .5; }
+.timeline .status.measured-bg { fill: var(--line); }
+.timeline .band { fill: var(--band); }
+.timeline .step-line { stroke: var(--muted); stroke-dasharray: 3 4; stroke-width: 1; }
+.timeline .step-dot circle { fill: var(--accent); } .timeline .step-dot text { fill: #fff; font-size: 11px; font-weight: 700; }
+.timeline .axis, .timeline .tick { stroke: var(--muted); }
+.timeline .tick-text { font-size: 11px; fill: var(--muted); } .timeline .tick-sub { font-size: 10px; fill: var(--muted); opacity: .8; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+.legend i { display: inline-block; width: 22px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+.steps { margin: 12px 0 0; padding-left: 0; list-style: none; display: grid; gap: 4px; }
+.steps li { display: grid; grid-template-columns: 26px 120px 1fr; gap: 8px; align-items: baseline; font-size: 14px; }
+.steps .n { background: var(--accent); color: #fff; border-radius: 50%; width: 20px; height: 20px; font-size: 11px;
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 700; }
+.steps .t { color: var(--muted); font-variant-numeric: tabular-nums; }
+.failure { border-left: 4px solid var(--bad); padding: 8px 12px; margin: 10px 0; background: var(--band); border-radius: 0 8px 8px 0; }
+.failure .when { font-weight: 700; color: var(--bad); }
+.failure .why { margin-top: 4px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tag { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 12px; font-weight: 600; }
+.tag.ok { background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok); }
+.tag.move { background: color-mix(in srgb, var(--warn) 22%, transparent); color: var(--warn); }
+.tag.bad { background: color-mix(in srgb, var(--bad) 18%, transparent); color: var(--bad); }
+.note { color: var(--muted); font-size: 13.5px; }
+ul.lints { margin: 0; padding-left: 18px; } ul.lints li { margin: 4px 0; }
+details { margin-top: 12px; } summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+pre { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow-x: auto; font-size: 12.5px; }
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-top: 4px; }
+.metric { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+.metric b { display: block; font-size: 20px; } .metric span { color: var(--muted); font-size: 12.5px; }
+footer { color: var(--muted); font-size: 12.5px; margin-top: 22px; }
+@media (max-width: 700px) {
+  main { padding: 18px 12px 36px; } h1 { font-size: 21px; }
+  .steps li { grid-template-columns: 26px 1fr; } .steps .t { grid-column: 2; }
+}
+</style></head><body><main><header><div><div class='brand'>DNSSEC FlightCheck</div><h1>ZSK rollover (pre-publish), safe timing</h1><div class='meta'>Zone <b>bank.test.</b> · conservative model · propagation 5m · registry delay 0s · max cache TTL 7d · start 2026-11-02 12:00 UTC</div></div><div class="verdict ok">SAFE<small>no bogus answers at any moment</small></div></header><p class='desc'>RFC 7583 pre-publish: the new ZSK is published first and used only after the old DNSKEY RRset has expired from caches; the old ZSK is removed only after every signature it made has expired (the longest data TTL is 1 day).</p><section><h2>Timeline</h2><svg class="timeline" viewBox="0 0 1100 444" role="img" aria-label="Timeline of RRset versions and validation status"><defs><pattern id="hatch-ds" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect class="hatch-ds" width="3" height="6"/></pattern><pattern id="hatch-dnskey" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect class="hatch-dnskey" width="3" height="6"/></pattern><pattern id="hatch-data" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect class="hatch-data" width="3" height="6"/></pattern></defs><line class="step-line" x1="229.3" y1="30" x2="229.3" y2="374"/><g class="step-dot"><title>Publish ZSK2 at T+0</title><circle cx="229.3" cy="16" r="10"/><text x="229.3" y="20" text-anchor="middle">1</text></g><line class="step-line" x1="267.5" y1="30" x2="267.5" y2="374"/><g class="step-dot"><title>Sign with ZSK2 at T+2h</title><circle cx="267.5" cy="16" r="10"/><text x="267.5" y="20" text-anchor="middle">2</text></g><line class="step-line" x1="763.6" y1="30" x2="763.6" y2="374"/><g class="step-dot"><title>Remove ZSK1 at T+1d 4h</title><circle cx="763.6" cy="16" r="10"/><text x="763.6" y="20" text-anchor="middle">3</text></g><text class="row-label" x="184" y="66" text-anchor="end">DS (parent)</text><g><title>DS v0: KSK1
+served before the plan -&gt; never
+can stay cached until never (TTL 1d)
+introduced by: initial state</title><rect class="bar ds" x="196.0" y="44" width="888.0" height="16" rx="2"/><text class="bar-text" x="201.0" y="56">v0  KSK1</text></g><text class="row-label" x="184" y="116" text-anchor="end">DNSKEY</text><g><title>DNSKEY v0: KSK1 ZSK1  ·  sig KSK1
+served before the plan -&gt; T+5m
+can stay cached until T+1h 5m (TTL 1h)
+introduced by: initial state</title><rect class="tail" fill="url(#hatch-dnskey)" x="230.9" y="94" width="19.1" height="16" rx="2"/><rect class="bar dnskey" x="196.0" y="94" width="34.9" height="16" rx="2"/><text class="bar-text" x="201.0" y="106">v0</text></g><g><title>DNSKEY v1: KSK1 ZSK1 ZSK2  ·  sig KSK1
+served T+0 -&gt; T+1d 4h 5m
+can stay cached until T+1d 5h 5m (TTL 1h)
+introduced by: Publish ZSK2</title><rect class="tail" fill="url(#hatch-dnskey)" x="765.1" y="114" width="19.1" height="16" rx="2"/><rect class="bar dnskey" x="229.3" y="114" width="535.9" height="16" rx="2"/><text class="bar-text" x="234.3" y="126">v1  KSK1 ZSK1 ZSK2  ·  sig KSK1</text></g><g><title>DNSKEY v2: KSK1 ZSK2  ·  sig KSK1
+served T+1d 4h -&gt; never
+can stay cached until never (TTL 1h)
+introduced by: Remove ZSK1</title><rect class="bar dnskey" x="763.6" y="94" width="320.4" height="16" rx="2"/><text class="bar-text" x="768.6" y="106">v2  KSK1 ZSK2  ·  sig KSK1</text></g><text class="row-label" x="184" y="166" text-anchor="end">www</text><g><title>www v0: sig ZSK1
+served before the plan -&gt; T+2h 5m
+can stay cached until T+3h 5m (TTL 1h)
+introduced by: initial state</title><rect class="tail" fill="url(#hatch-data)" x="269.0" y="144" width="19.1" height="16" rx="2"/><rect class="bar data" x="196.0" y="144" width="73.0" height="16" rx="2"/><text class="bar-text" x="201.0" y="156">v0  sig ZSK1</text></g><g><title>www v1: sig ZSK2
+served T+2h -&gt; never
+can stay cached until never (TTL 1h)
+introduced by: Sign with ZSK2</title><rect class="bar data" x="267.5" y="164" width="816.5" height="16" rx="2"/><text class="bar-text" x="272.5" y="176">v1  sig ZSK2</text></g><text class="row-label" x="184" y="216" text-anchor="end">mail</text><g><title>mail v0: sig ZSK1
+served before the plan -&gt; T+2h 5m
+can stay cached until T+1d 2h 5m (TTL 1d)
+introduced by: initial state</title><rect class="tail" fill="url(#hatch-data)" x="269.0" y="194" width="457.9" height="16" rx="2"/><rect class="bar data" x="196.0" y="194" width="73.0" height="16" rx="2"/><text class="bar-text" x="201.0" y="206">v0  sig ZSK1</text></g><g><title>mail v1: sig ZSK2
+served T+2h -&gt; never
+can stay cached until never (TTL 1d)
+introduced by: Sign with ZSK2</title><rect class="bar data" x="267.5" y="214" width="816.5" height="16" rx="2"/><text class="bar-text" x="272.5" y="226">v1  sig ZSK2</text></g><text class="row-label" x="184" y="261" text-anchor="end">Predicted: conservative</text><rect class="status ok" x="196.0" y="248" width="888.0" height="18"><title>secure: before the plan -&gt; never</title></rect><text class="row-label" x="184" y="287" text-anchor="end">Predicted: fetch</text><rect class="status ok" x="196.0" y="274" width="888.0" height="18"><title>secure: before the plan -&gt; never</title></rect><text class="row-label" x="184" y="313" text-anchor="end">Predicted: unbound, this clock</text><rect class="status ok" x="196.0" y="300" width="888.0" height="18"><title>secure: before the plan -&gt; never</title></rect><text class="row-label" x="184" y="339" text-anchor="end">Predicted: bind, this clock</text><rect class="status ok" x="196.0" y="326" width="888.0" height="18"><title>secure: before the plan -&gt; never</title></rect><text class="row-label" x="184" y="365" text-anchor="end">Unbound 1.26.2 x3</text><rect class="status measured-bg" x="196" y="352" width="888" height="18"/><rect class="status ok" x="196.0" y="352" width="888.0" height="18"><title>measured secure: T-1d -&gt; T+1d 20h 47m 38s</title></rect><text class="row-label" x="184" y="391" text-anchor="end">BIND 9.16.50 x3</text><rect class="status measured-bg" x="196" y="378" width="888" height="18"/><rect class="status ok" x="196.0" y="378" width="888.0" height="18"><title>measured secure: T-23h 59m 59s -&gt; T+1d 20h 47m 38s</title></rect><line class="axis" x1="196" y1="406" x2="1084" y2="406"/><line class="tick" x1="229.3" y1="404" x2="229.3" y2="410"/><text class="tick-text" x="229.3" y="423" text-anchor="middle">T+0</text><text class="tick-sub" x="229.3" y="436" text-anchor="middle">02 Nov 12:00</text><line class="tick" x1="343.8" y1="404" x2="343.8" y2="410"/><text class="tick-text" x="343.8" y="423" text-anchor="middle">T+6h</text><text class="tick-sub" x="343.8" y="436" text-anchor="middle">02 Nov 18:00</text><line class="tick" x1="458.3" y1="404" x2="458.3" y2="410"/><text class="tick-text" x="458.3" y="423" text-anchor="middle">T+12h</text><text class="tick-sub" x="458.3" y="436" text-anchor="middle">03 Nov 00:00</text><line class="tick" x1="572.8" y1="404" x2="572.8" y2="410"/><text class="tick-text" x="572.8" y="423" text-anchor="middle">T+18h</text><text class="tick-sub" x="572.8" y="436" text-anchor="middle">03 Nov 06:00</text><line class="tick" x1="687.2" y1="404" x2="687.2" y2="410"/><text class="tick-text" x="687.2" y="423" text-anchor="middle">T+1d</text><text class="tick-sub" x="687.2" y="436" text-anchor="middle">03 Nov 12:00</text><line class="tick" x1="801.7" y1="404" x2="801.7" y2="410"/><text class="tick-text" x="801.7" y="423" text-anchor="middle">T+1d 6h</text><text class="tick-sub" x="801.7" y="436" text-anchor="middle">03 Nov 18:00</text><line class="tick" x1="916.2" y1="404" x2="916.2" y2="410"/><text class="tick-text" x="916.2" y="423" text-anchor="middle">T+1d 12h</text><text class="tick-sub" x="916.2" y="436" text-anchor="middle">04 Nov 00:00</text><line class="tick" x1="1030.7" y1="404" x2="1030.7" y2="410"/><text class="tick-text" x="1030.7" y="423" text-anchor="middle">T+1d 18h</text><text class="tick-sub" x="1030.7" y="436" text-anchor="middle">04 Nov 06:00</text></svg><div class='legend'><span><i style='background:var(--dnskey)'></i>served by the authoritative servers</span><span><i style='background:repeating-linear-gradient(135deg,var(--dnskey) 0 3px,transparent 3px 6px)'></i>can still be in resolver caches</span><span><i style='background:var(--ok)'></i>validates</span><span><i style='background:var(--bad)'></i>bogus (SERVFAIL)</span><span><i style='background:var(--bad);opacity:.5'></i>valid again, resolvers still remember the failure</span><span><i style='background:var(--warn)'></i>insecure for some or all resolvers</span></div><ol class='steps'><li><span class='n'>1</span><span class='t'>T+0</span><span>Publish ZSK2</span></li><li><span class='n'>2</span><span class='t'>T+2h</span><span>Sign with ZSK2</span></li><li><span class='n'>3</span><span class='t'>T+1d 4h</span><span>Remove ZSK1</span></li></ol></section><section><h2>Lab measurement</h2><div class='metrics'><div class='metric'><b>0 failures</b>Unbound 1.26.2: failures inside the fetch prediction<br><span>8,658 lookups, validating: yes, EDE -</span></div><div class='metric'><b>0 failures</b>BIND 9.16.50: failures inside the fetch prediction<br><span>8,658 lookups, validating: yes, EDE -</span></div><div class='metric'><b>x600</b>clock<br><span>one real second = 10m of plan time</span></div></div></section><section><h2>Safe schedule</h2><table><thead><tr><th>Step</th><th>Planned</th><th>Earliest safe</th><th>Recommended</th><th></th></tr></thead><tbody><tr><td>Publish ZSK2</td><td class='num'>T+0</td><td class='num'>T+0</td><td class='num'>T+0</td><td><span class='tag ok'>ok</span></td></tr><tr><td>Sign with ZSK2</td><td class='num'>T+2h</td><td class='num'>T+2h</td><td class='num'>T+2h</td><td><span class='tag ok'>ok</span></td></tr><tr><td>Remove ZSK1</td><td class='num'>T+1d 4h</td><td class='num'>T+1d 4h</td><td class='num'>T+1d 4h</td><td><span class='tag ok'>ok</span></td></tr></tbody></table><p class='note'>Recommended = earliest safe moment + 1h safety margin. The corrected plan is <b>safe</b> in the conservative model.</p><details><summary>Corrected plan (YAML)</summary><pre>name: ZSK rollover (pre-publish), safe timing
+description: &#x27;RFC 7583 pre-publish: the new ZSK is published first and used only after
+  the old DNSKEY RRset has expired from caches; the old ZSK is removed only after
+  every signature it made has expired (the longest data TTL is 1 day).
+
+  &#x27;
+zone: bank.test.
+start: 2026-11-02 12:00:00+00:00
+delays:
+  propagation: 5m
+margin: 1h
+keys:
+  KSK1:
+    role: ksk
+    algorithm: ECDSAP256SHA256
+  ZSK1:
+    role: zsk
+    algorithm: ECDSAP256SHA256
+  ZSK2:
+    role: zsk
+    algorithm: ECDSAP256SHA256
+initial:
+  ds:
+    keys:
+    - KSK1
+    ttl: 1d
+  dnskey:
+    keys:
+    - KSK1
+    - ZSK1
+    signed_by:
+    - KSK1
+    ttl: 1h
+  data:
+    www:
+      signed_by:
+      - ZSK1
+      ttl: 1h
+    mail:
+      signed_by:
+      - ZSK1
+      ttl: 1d
+steps:
+- name: Publish ZSK2
+  at: 0s
+  dnskey:
+    keys:
+    - KSK1
+    - ZSK1
+    - ZSK2
+- name: Sign with ZSK2
+  at: 2h
+  data:
+    www:
+      signed_by:
+      - ZSK2
+    mail:
+      signed_by:
+      - ZSK2
+- name: Remove ZSK1
+  at: 1d4h
+  dnskey:
+    keys:
+    - KSK1
+    - ZSK2
+</pre></details></section><footer>Worst-case analysis: a version can stay in a resolver's cache for a full TTL after the last authoritative server stopped serving it. Conservative model = RFC 7583 assumptions (any cached versions may be combined, as for validators behind caches); fetch model = a validating resolver that validates on fetch and trusts its cache.</footer></main></body></html>

@@ -1,0 +1,30 @@
+name: Turning DNSSEC on, sign first and submit the DS later
+description: >
+  The zone is signed first; the DS is submitted only after the unsigned answers have expired
+  from every cache.
+zone: bank.test.
+start: 2026-11-02T12:00:00Z
+delays:
+  propagation: 5m
+  registry: 10m
+margin: 1h
+
+keys:
+  KSK1: {role: ksk, algorithm: ECDSAP256SHA256}
+  ZSK1: {role: zsk, algorithm: ECDSAP256SHA256}
+
+initial:
+  ds:     {keys: [], ttl: 1h}
+  dnskey: {keys: [], signed_by: [], ttl: 1h}
+  data:
+    www:  {signed_by: [], ttl: 1h}
+
+steps:
+  - name: Sign the zone
+    at: 0h
+    dnskey: {keys: [KSK1, ZSK1], signed_by: [KSK1]}
+    data:
+      www: {signed_by: [ZSK1]}
+  - name: Submit the DS
+    at: 2h
+    ds: {keys: [KSK1], ttl: 1d}

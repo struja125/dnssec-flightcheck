@@ -1,0 +1,34 @@
+name: ZSK rollover (pre-publish), safe timing
+description: >
+  RFC 7583 pre-publish: the new ZSK is published first and used only after the old DNSKEY RRset
+  has expired from caches; the old ZSK is removed only after every signature it made has expired
+  (the longest data TTL is 1 day).
+zone: bank.test.
+start: 2026-11-02T12:00:00Z
+delays:
+  propagation: 5m
+margin: 1h
+
+keys:
+  KSK1: {role: ksk, algorithm: ECDSAP256SHA256}
+  ZSK1: {role: zsk, algorithm: ECDSAP256SHA256}
+  ZSK2: {role: zsk, algorithm: ECDSAP256SHA256}
+
+initial:
+  ds:     {keys: [KSK1], ttl: 1d}
+  dnskey: {keys: [KSK1, ZSK1], signed_by: [KSK1], ttl: 1h}
+  data:
+    www:  {signed_by: [ZSK1], ttl: 1h}
+    mail: {signed_by: [ZSK1], ttl: 1d}
+
+steps:
+  - name: Publish ZSK2
+    at: 0h
+    dnskey: {keys: [KSK1, ZSK1, ZSK2]}
+  - name: Sign with ZSK2
+    at: 2h
+    data:
+      "*": {signed_by: [ZSK2]}
+  - name: Remove ZSK1
+    at: 1d4h
+    dnskey: {keys: [KSK1, ZSK2]}

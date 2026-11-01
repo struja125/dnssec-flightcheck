@@ -1,0 +1,268 @@
+[
+ {
+  "scenario": "ksk-realtime-bad",
+  "scale": 1.0,
+  "exit": 0,
+  "default_timers": true,
+  "plan": "KSK swapped too early, in real time",
+  "interval": 0.25,
+  "instances": 6,
+  "results": {
+   "unbound": {
+    "software": "unbound",
+    "instances": 6,
+    "lookups": 14808,
+    "secure": 13858,
+    "insecure": 0,
+    "servfail": 950,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 950,
+     "fetch": 950
+    },
+    "first_failure": 39.22468304634094,
+    "last_failure": 114.04978013038635,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 155,
+     "fetch": 155
+    },
+    "observed_seconds": {
+     "conservative": 75.07786345481873,
+     "fetch": 75.07786345481873
+    },
+    "recovery_real": {
+     "conservative": -10.950219869613647,
+     "fetch": -10.950219869613647
+    },
+    "inside_without_memory": {
+     "conservative": 950,
+     "fetch": 950
+    },
+    "memory": [
+     60,
+     60
+    ],
+    "ede": {
+     "6": 950
+    },
+    "segments": [
+     [
+      -119.9987428188324,
+      39.22468304634094,
+      "secure"
+     ],
+     [
+      39.22468304634094,
+      114.30254650115967,
+      "bogus"
+     ],
+     [
+      114.30254650115967,
+      553.4837577342987,
+      "secure"
+     ]
+    ],
+    "validated": true
+   },
+   "bind": {
+    "software": "bind",
+    "instances": 6,
+    "lookups": 14808,
+    "secure": 13848,
+    "insecure": 0,
+    "servfail": 960,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 960,
+     "fetch": 960
+    },
+    "first_failure": 34.253578662872314,
+    "last_failure": 134.80242538452148,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 125,
+     "fetch": 125
+    },
+    "observed_seconds": {
+     "conservative": 100.80058264732361,
+     "fetch": 100.80058264732361
+    },
+    "recovery_real": {
+     "conservative": 9.802425384521484,
+     "fetch": 9.802425384521484
+    },
+    "inside_without_memory": {
+     "conservative": 930,
+     "fetch": 930
+    },
+    "memory": [
+     30,
+     1
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -119.99919128417969,
+      34.253578662872314,
+      "secure"
+     ],
+     [
+      34.253578662872314,
+      135.05416131019592,
+      "bogus"
+     ],
+     [
+      135.05416131019592,
+      553.4840211868286,
+      "secure"
+     ]
+    ],
+    "validated": true
+   }
+  }
+ },
+ {
+  "scenario": "ttl-trap-realtime-bad",
+  "scale": 1.0,
+  "exit": 0,
+  "default_timers": true,
+  "plan": "ZSK used before the old DNSKEY RRset expired, in real time",
+  "interval": 0.25,
+  "instances": 6,
+  "results": {
+   "unbound": {
+    "software": "unbound",
+    "instances": 6,
+    "lookups": 14734,
+    "secure": 13070,
+    "insecure": 0,
+    "servfail": 1664,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 1664,
+     "fetch": 1664
+    },
+    "first_failure": 29.10515332221985,
+    "last_failure": 148.9153332710266,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 162,
+     "fetch": 162
+    },
+    "observed_seconds": {
+     "conservative": 120.06233406066895,
+     "fetch": 120.06233406066895
+    },
+    "recovery_real": {
+     "conservative": 26.91533327102661,
+     "fetch": 26.91533327102661
+    },
+    "inside_without_memory": {
+     "conservative": 1468,
+     "fetch": 1468
+    },
+    "memory": [
+     60,
+     60
+    ],
+    "ede": {
+     "9": 1664
+    },
+    "segments": [
+     [
+      -119.99886178970337,
+      29.10515332221985,
+      "secure"
+     ],
+     [
+      29.10515332221985,
+      149.1674873828888,
+      "bogus"
+     ],
+     [
+      149.1674873828888,
+      550.3443915843964,
+      "secure"
+     ]
+    ],
+    "validated": true
+   },
+   "bind": {
+    "software": "bind",
+    "instances": 6,
+    "lookups": 14733,
+    "secure": 13737,
+    "insecure": 0,
+    "servfail": 996,
+    "timeouts": 0,
+    "other": 0,
+    "unexpected_insecure": 0,
+    "inside": {
+     "conservative": 996,
+     "fetch": 996
+    },
+    "first_failure": 29.196022748947144,
+    "last_failure": 118.95739912986755,
+    "overshoot": {
+     "conservative": null,
+     "fetch": null
+    },
+    "predicted_seconds": {
+     "conservative": 103,
+     "fetch": 103
+    },
+    "observed_seconds": {
+     "conservative": 90.01410174369812,
+     "fetch": 90.01410174369812
+    },
+    "recovery_real": {
+     "conservative": -3.0426008701324463,
+     "fetch": -3.0426008701324463
+    },
+    "inside_without_memory": {
+     "conservative": 996,
+     "fetch": 996
+    },
+    "memory": [
+     30,
+     1
+    ],
+    "ede": {},
+    "segments": [
+     [
+      -119.99922561645508,
+      29.196022748947144,
+      "secure"
+     ],
+     [
+      29.196022748947144,
+      119.21012449264526,
+      "bogus"
+     ],
+     [
+      119.21012449264526,
+      550.3454909324646,
+      "secure"
+     ]
+    ],
+    "validated": true
+   }
+  }
+ }
+]

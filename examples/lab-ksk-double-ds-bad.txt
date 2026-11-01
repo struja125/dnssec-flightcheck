@@ -1,0 +1,19 @@
+FlightCheck lab - KSK rollover (double-DS), KSK swapped too early
+2 resolver populations x 12 resolvers, a lookup every 5m per resolver, 12,412 lookups, 5,046 DNS queries with real signatures, 10.8s
+Simulated period: T-1d -> T+1d 7h 19m 12s
+
+validating resolvers (compared with the fetch model)
+  predicted bogus: T+2h -> T+1d 1h
+  measured: 1,349 of 6,317 lookups SERVFAIL, first T+2h 7m 43s, last T+23h 27m 58s
+  every SERVFAIL inside a predicted window: yes (1349/1349)
+  failures observed during 21h 22m 53s of the 23h 1m predicted (93%)
+     1,349 x DNSKEY bank.test.: no DNSKEY matches the cached DS RRset
+
+validators behind a cache (compared with the conservative model)
+  predicted bogus: T+2h -> T+1d 1h
+  measured: 1,390 of 6,095 lookups SERVFAIL, first T+2h 11m 32s, last T+23h 8m 54s
+  every SERVFAIL inside a predicted window: yes (1390/1390)
+  failures observed during 21h 6m 29s of the 23h 1m predicted (92%)
+     1,390 x DNSKEY bank.test.: no DNSKEY matches the cached DS RRset
+
+The lab agrees with the simulator: no failure happened outside the predicted windows.

@@ -1,0 +1,16 @@
+KSK swapped too early, in real time: 12 resolvers, clock x1, about 679s
+FlightCheck real resolvers - KSK swapped too early, in real time (clock x1)
+Unbound 1.26.2 (6 instances): 14809 lookups
+  secure 13857, insecure 0, SERVFAIL 952, timeouts 0, other 0
+  really validating: yes
+  first failure T+40s, last T+1m 55s
+  EDE codes: {'6': 952}
+  conservative: predicted 2m 35s, inside 952/952 (without timers 952/952), observed 1m 15s, last failure -10 real seconds after the zone became valid
+  fetch: predicted 2m 35s, inside 952/952 (without timers 952/952), observed 1m 15s, last failure -10 real seconds after the zone became valid
+BIND 9.16.50 (6 instances): 14806 lookups
+  secure 13846, insecure 0, SERVFAIL 960, timeouts 0, other 0
+  really validating: yes
+  first failure T+35s, last T+2m 15s
+  EDE codes: -
+  conservative: predicted 2m 5s, inside 960/960 (without timers 927/960), observed 1m 41s, last failure 10 real seconds after the zone became valid
+  fetch: predicted 2m 5s, inside 960/960 (without timers 927/960), observed 1m 41s, last failure 10 real seconds after the zone became valid

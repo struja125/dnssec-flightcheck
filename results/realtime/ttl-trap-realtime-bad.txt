@@ -1,0 +1,16 @@
+ZSK used before the old DNSKEY RRset expired, in real time: 12 resolvers, clock x1, about 676s
+FlightCheck real resolvers - ZSK used before the old DNSKEY RRset expired, in real time (clock x1)
+Unbound 1.26.2 (6 instances): 14734 lookups
+  secure 13070, insecure 0, SERVFAIL 1664, timeouts 0, other 0
+  really validating: yes
+  first failure T+29s, last T+2m 29s
+  EDE codes: {'9': 1664}
+  conservative: predicted 2m 42s, inside 1664/1664 (without timers 1468/1664), observed 2m, last failure 27 real seconds after the zone became valid
+  fetch: predicted 2m 42s, inside 1664/1664 (without timers 1468/1664), observed 2m, last failure 27 real seconds after the zone became valid
+BIND 9.16.50 (6 instances): 14733 lookups
+  secure 13737, insecure 0, SERVFAIL 996, timeouts 0, other 0
+  really validating: yes
+  first failure T+29s, last T+1m 59s
+  EDE codes: -
+  conservative: predicted 1m 43s, inside 996/996 (without timers 996/996), observed 1m 30s, last failure -3 real seconds after the zone became valid
+  fetch: predicted 1m 43s, inside 996/996 (without timers 996/996), observed 1m 30s, last failure -3 real seconds after the zone became valid

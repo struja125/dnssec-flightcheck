@@ -1,0 +1,45 @@
+algorithm-rollover-bad unbound: 1184 failures, 1184 inside the raw fetch window, 0 before it
+  fetch window [(3.0, 25.0)]
+  unbound-0: 3.98h -> 24.26h, 485
+  unbound-1: 4.0h -> 13.76h, 234
+  unbound-2: 3.99h -> 23.44h, 465
+algorithm-rollover-bad bind: 952 failures, 952 inside the raw fetch window, 0 before it
+  fetch window [(3.0, 25.0)]
+  bind-0: 3.98h -> 23.96h, 476
+  bind-1: 4.0h -> 8.96h, 119
+  bind-2: 3.99h -> 18.97h, 357
+go-insecure-bad unbound: 1427 failures, 1272 inside the raw fetch window, 0 before it
+  fetch window [(0.0, 1.08), (1.08, 25.0)]
+  unbound-0: 1.04h -> 31.46h, 727
+  unbound-1: 1.02h -> 10.33h, 223
+  unbound-2: 1.01h -> 20.96h, 477
+go-insecure-bad bind: 1069 failures, 1069 inside the raw fetch window, 0 before it
+  fetch window [(0.0, 1.08), (1.08, 25.0)]
+  bind-0: 1.04h -> 23.97h, 546
+  bind-1: 0.86h -> 7.8h, 166
+  bind-2: 0.85h -> 15.82h, 357
+ksk-double-ds-bad unbound: 1424 failures, 1233 inside the raw fetch window, 0 before it
+  fetch window [(2.0, 25.0)]
+  unbound-0: 3.0h -> 32.97h, 716
+  unbound-1: 2.99h -> 13.14h, 243
+  unbound-2: 4.03h -> 23.47h, 465
+ksk-double-ds-bad bind: 1068 failures, 996 inside the raw fetch window, 0 before it
+  fetch window [(2.0, 25.0)]
+  bind-0: 3.0h -> 28.0h, 592
+  bind-1: 2.99h -> 7.96h, 119
+  bind-2: 3.03h -> 18.0h, 357
+ttl-trap-bad unbound: 482 failures, 482 inside the raw fetch window, 0 before it
+  fetch window [(1.0, 24.08)]
+  unbound-1: 2.02h -> 8.13h, 146
+  unbound-2: 2.02h -> 16.12h, 336
+ttl-trap-bad bind: 997 failures, 997 inside the raw fetch window, 0 before it
+  fetch window [(1.0, 24.08)]
+  bind-0: 2.0h -> 23.97h, 523
+  bind-1: 2.02h -> 7.96h, 142
+  bind-2: 2.02h -> 15.95h, 332
+zsk-prepublish-bad unbound: 4 failures, 3 inside the raw fetch window, 0 before it
+  fetch window [(0.0, 1.08)]
+  unbound-0: 1.0h -> 1.12h, 4
+{'lookups': 113711, 'failures': 8607, 'strict': 8188, 'before': 0, 'after': 419, 'good_plan_failures': 0}
+go-secure-good model: [(-inf, 2.17, 'insecure'), (2.17, 3.17, 'partly-insecure'), (3.17, inf, 'secure')]
+go-secure-good last insecure answer: {'bind-0': 2.84, 'bind-1': 2.83, 'bind-2': 2.86, 'unbound-0': 2.84, 'unbound-1': 2.83, 'unbound-2': 3.83}

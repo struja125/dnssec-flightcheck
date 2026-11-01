@@ -1,0 +1,11 @@
+FlightCheck real resolvers - ZSK rollover (pre-publish), safe timing (clock x600)
+Unbound 1.26.2 (3 instances): 8658 lookups
+  secure 8658, insecure 0, SERVFAIL 0, timeouts 0, other 0
+  really validating: yes
+  conservative: predicted 0s, inside 0/0 (without timers 0/0)
+  fetch: predicted 0s, inside 0/0 (without timers 0/0)
+BIND 9.16.50 (3 instances): 8658 lookups
+  secure 8658, insecure 0, SERVFAIL 0, timeouts 0, other 0
+  really validating: yes
+  conservative: predicted 0s, inside 0/0 (without timers 0/0)
+  fetch: predicted 0s, inside 0/0 (without timers 0/0)

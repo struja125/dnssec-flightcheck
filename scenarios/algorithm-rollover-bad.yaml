@@ -1,0 +1,36 @@
+name: Algorithm rollover RSA (8) to ECDSA (13), rushed
+description: >
+  New ECDSA keys, new signatures and the new DS are all introduced at once, and the RSA keys are
+  removed three hours later. Resolvers that cached the old DNSKEY RRset or the old DS RRset see
+  a broken chain of trust.
+zone: bank.test.
+start: 2026-11-02T12:00:00Z
+delays:
+  propagation: 5m
+  registry: 1h
+margin: 1h
+
+keys:
+  KSK8:  {role: ksk, algorithm: RSASHA256}
+  ZSK8:  {role: zsk, algorithm: RSASHA256}
+  KSK13: {role: ksk, algorithm: ECDSAP256SHA256}
+  ZSK13: {role: zsk, algorithm: ECDSAP256SHA256}
+
+initial:
+  ds:     {keys: [KSK8], ttl: 1d}
+  dnskey: {keys: [KSK8, ZSK8], signed_by: [KSK8], ttl: 1h}
+  data:
+    www:  {signed_by: [ZSK8], ttl: 1h}
+
+steps:
+  - name: Add ECDSA keys and signatures, submit the new DS
+    at: 0h
+    dnskey: {keys: [KSK8, ZSK8, KSK13, ZSK13], signed_by: [KSK8, KSK13]}
+    data:
+      www: {signed_by: [ZSK8, ZSK13]}
+    ds: {keys: [KSK13]}
+  - name: Remove the RSA keys and signatures
+    at: 3h
+    dnskey: {keys: [KSK13, ZSK13], signed_by: [KSK13]}
+    data:
+      www: {signed_by: [ZSK13]}

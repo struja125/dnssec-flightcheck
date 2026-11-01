@@ -1,0 +1,15 @@
+FlightCheck real resolvers - TTL trap, lowering the DNSKEY TTL right before a ZSK switch (clock x600)
+Unbound 1.26.2 (3 instances): 3961 lookups
+  secure 3479, insecure 0, SERVFAIL 482, timeouts 0, other 0
+  really validating: yes
+  first failure T+2h 1m 11s, last T+16h 7m 1s
+  EDE codes: {'9': 482}
+  conservative: predicted 23h 5m 1s, inside 482/482 (without timers 482/482), observed 14h 8m 21s, last failure -48 real seconds after the zone became valid
+  fetch: predicted 23h 5m 1s, inside 482/482 (without timers 482/482), observed 14h 8m 21s, last failure -48 real seconds after the zone became valid
+BIND 9.16.50 (3 instances): 3958 lookups
+  secure 2961, insecure 0, SERVFAIL 997, timeouts 0, other 0
+  really validating: yes
+  first failure T+1h 59m 45s, last T+23h 58m 28s
+  EDE codes: -
+  conservative: predicted 23h 5m, inside 997/997 (without timers 997/997), observed 22h 1m 14s, last failure -1 real seconds after the zone became valid
+  fetch: predicted 23h 5m, inside 997/997 (without timers 997/997), observed 22h 1m 14s, last failure -1 real seconds after the zone became valid

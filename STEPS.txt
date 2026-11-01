@@ -1,0 +1,72 @@
+DNSSEC FlightCheck: steps to make it work
+=========================================
+
+You need Python 3.10 or newer. Type the commands in PowerShell.
+On macOS or Linux, see the note under step 2.
+
+
+1. Go to the project folder
+
+   cd C:\Users\Struja\Desktop\dnssec-flightcheck-real-resolvers-lts\dnssec-flightcheck-real-resolvers
+
+
+2. Install (first time only)
+
+   py -m venv .venv
+   .venv\Scripts\Activate.ps1
+   python -m pip install -e ".[test]"
+
+   If PowerShell refuses Activate.ps1, run this and then activate again:
+   Set-ExecutionPolicy -Scope Process RemoteSigned
+
+   macOS or Linux: use these first two commands instead, then the same pip command:
+   python3 -m venv .venv
+   source .venv/bin/activate
+
+
+3. Every time you open a new terminal
+
+   Go to the project folder (step 1), then run:
+   .venv\Scripts\Activate.ps1
+
+
+4. Run the tests
+
+   python -m pytest -q
+
+   Expected: 104 passed
+
+
+5. Check a broken plan
+
+   flightcheck check scenarios/ksk-double-ds-bad.yaml --html report.html
+   start report.html
+
+   Expected: Verdict: UNSAFE (SERVFAIL for up to 23h 2m)
+
+
+6. Create the corrected plan
+
+   flightcheck fix scenarios/ksk-double-ds-bad.yaml --write fixed.yaml
+
+   Expected: the corrected plan is safe under both models
+
+
+7. Check the corrected plan
+
+   flightcheck check fixed.yaml
+
+   Expected: Verdict: SAFE
+
+
+8. Run both plans in the built-in lab (a few seconds each)
+
+   flightcheck lab scenarios/ksk-double-ds-bad.yaml
+   flightcheck lab fixed.yaml
+
+   Expected, first plan:  observed_agreement
+   Expected, second plan: no_failures_expected_or_observed
+
+
+If you get to step 8 with these results, the project works.
+More detail, including real resolvers and Docker, is in README.md.

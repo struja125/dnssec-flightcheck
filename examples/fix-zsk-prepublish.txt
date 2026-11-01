@@ -1,0 +1,39 @@
+DNSSEC FlightCheck - ZSK rollover (pre-publish), new ZSK used immediately
+Zone bank.test.   Model: conservative (RFC 7583: any cached versions may meet, e.g. validators behind caches)
+Delays: propagation 5m, registry 0s   Resolver max cache TTL 7d   Safety margin 1h
+Plan start: 2026-11-02 12:00 UTC
+
+Steps
+             T+0  Publish ZSK2 and sign with it
+            T+2h  Remove ZSK1
+
+Verdict: UNSAFE - resolvers can answer SERVFAIL for 23h 12m in total, from T+0 (Mon 02 Nov 12:00 UTC) until T+1d 6m (Tue 03 Nov 12:06 UTC).
+The zone itself cannot be validated for 23h 10m; the rest is resolvers remembering the failure (worst profile: chain of trust 1m, answers 1m).
+
+  [1] T+0 -> T+1h 5m  (1h 5m)
+      From T+0 (Mon 02 Nov 12:00 UTC) the zone serves mail v1 (step "Publish ZSK2 and sign with
+        it"), but resolvers may still hold DNSKEY v0 in their cache until T+1h 5m (Mon 02 Nov 13:05
+        UTC). mail becomes bogus: it is signed only by {ZSK2}, and none of these keys is in the
+        cached DNSKEY RRset {KSK1, ZSK1}. Resolvers can keep answering SERVFAIL for up to 1m after
+        that.
+
+  [2] T+0 -> T+1h 5m  (1h 5m)
+      From T+0 (Mon 02 Nov 12:00 UTC) the zone serves www v1 (step "Publish ZSK2 and sign with
+        it"), but resolvers may still hold DNSKEY v0 in their cache until T+1h 5m (Mon 02 Nov 13:05
+        UTC). www becomes bogus: it is signed only by {ZSK2}, and none of these keys is in the
+        cached DNSKEY RRset {KSK1, ZSK1}. Resolvers can keep answering SERVFAIL for up to 1m after
+        that.
+
+  [3] T+2h -> T+1d 5m  (22h 5m)
+      Resolvers may still hold mail v0 in their cache until T+1d 5m (Tue 03 Nov 12:05 UTC), but
+        from T+2h (Mon 02 Nov 14:00 UTC) they validate it against DNSKEY v2 (step "Remove ZSK1").
+        mail becomes bogus: it is signed only by {ZSK1}, and none of these keys is in the cached
+        DNSKEY RRset {KSK1, ZSK2}. Resolvers can keep answering SERVFAIL for up to 1m after that.
+
+Safe schedule (worst case + 1h margin)
+  * Split "Publish ZSK2 and sign with it": the change to mail, www must wait until the old data has
+    expired from caches, so it moves to a new step 2h 5m later
+             T+0  Publish ZSK2 and sign with it: ok
+         T+2h 5m  Publish ZSK2 and sign with it (part 2): ok
+            T+2h  Remove ZSK1: move to T+1d 3h 10m (earliest T+1d 2h 10m)
+  The corrected plan is safe. Use 'flightcheck fix --write' to save it.

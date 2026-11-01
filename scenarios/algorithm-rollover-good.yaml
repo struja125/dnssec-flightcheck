@@ -1,0 +1,43 @@
+name: Algorithm rollover RSA (8) to ECDSA (13), RFC 6781 conservative method
+description: >
+  Signatures of the new algorithm are added first, then the new keys, then the DS is changed,
+  and the old keys and signatures are removed only after the old DS and DNSKEY RRsets have
+  expired from every cache.
+zone: bank.test.
+start: 2026-11-02T12:00:00Z
+delays:
+  propagation: 5m
+  registry: 1h
+margin: 1h
+
+keys:
+  KSK8:  {role: ksk, algorithm: RSASHA256}
+  ZSK8:  {role: zsk, algorithm: RSASHA256}
+  KSK13: {role: ksk, algorithm: ECDSAP256SHA256}
+  ZSK13: {role: zsk, algorithm: ECDSAP256SHA256}
+
+initial:
+  ds:     {keys: [KSK8], ttl: 1d}
+  dnskey: {keys: [KSK8, ZSK8], signed_by: [KSK8], ttl: 1h}
+  data:
+    www:  {signed_by: [ZSK8], ttl: 1h}
+
+steps:
+  - name: Pre-sign with the ECDSA keys
+    at: 0h
+    dnskey: {signed_by: [KSK8, KSK13]}
+    data:
+      www: {signed_by: [ZSK8, ZSK13]}
+  - name: Publish the ECDSA keys
+    at: 2h
+    dnskey: {keys: [KSK8, ZSK8, KSK13, ZSK13]}
+  - name: Replace the DS with the ECDSA KSK
+    at: 4h
+    ds: {keys: [KSK13]}
+  - name: Remove the RSA keys
+    at: 1d6h
+    dnskey: {keys: [KSK13, ZSK13], signed_by: [KSK13]}
+  - name: Remove the RSA signatures
+    at: 1d8h
+    data:
+      www: {signed_by: [ZSK13]}

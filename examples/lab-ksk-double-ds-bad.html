@@ -1,0 +1,150 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>FlightCheck: KSK rollover (double-DS), KSK swapped too early</title><style>
+:root {
+  --bg: #f6f7f9; --card: #ffffff; --ink: #18202b; --muted: #5d6877; --line: #dde2e8;
+  --accent: #0b6e8a; --ok: #2f9e6e; --bad: #d64545; --warn: #d99a20;
+  --ds: #7a5cc4; --dnskey: #2f6fd1; --data: #138a8a; --band: rgba(214, 69, 69, 0.08);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12161c; --card: #1a2028; --ink: #e8edf3; --muted: #9aa6b4; --line: #2c3540;
+    --accent: #4fb3cf; --ok: #3fbf85; --bad: #ef6464; --warn: #e8b04a;
+    --ds: #a58bea; --dnskey: #6a9cf0; --data: #3fbcbc; --band: rgba(239, 100, 100, 0.12);
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.5 system-ui, "Segoe UI", Roboto, Arial, sans-serif; }
+main { max-width: 1160px; margin: 0 auto; padding: 28px 20px 48px; }
+header { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: flex-end; justify-content: space-between; }
+.brand { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+h1 { margin: 2px 0 0; font-size: 26px; line-height: 1.2; }
+.meta { color: var(--muted); font-size: 13.5px; margin-top: 6px; }
+.verdict { padding: 10px 16px; border-radius: 10px; font-weight: 700; font-size: 17px; color: #fff; }
+.verdict small { display: block; font-weight: 500; font-size: 13px; opacity: .92; }
+.verdict.ok { background: var(--ok); } .verdict.bad { background: var(--bad); }
+section { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; margin-top: 18px; }
+h2 { font-size: 16px; margin: 0 0 12px; }
+p.desc { margin: 10px 0 0; color: var(--muted); max-width: 900px; }
+.timeline { width: 100%; height: auto; display: block; color: var(--ink); }
+.timeline .row-label { font-size: 12.5px; fill: var(--ink); font-weight: 600; }
+.timeline .bar.ds { fill: var(--ds); } .timeline .bar.dnskey { fill: var(--dnskey); } .timeline .bar.data { fill: var(--data); }
+.timeline .tail { opacity: .55; }
+.timeline .hatch-ds { fill: var(--ds); } .timeline .hatch-dnskey { fill: var(--dnskey); } .timeline .hatch-data { fill: var(--data); }
+.timeline .bar-text { font-size: 11px; fill: #fff; font-weight: 600; pointer-events: none; paint-order: stroke; stroke: rgba(0,0,0,.25); stroke-width: 2px; }
+.timeline .status.ok { fill: var(--ok); } .timeline .status.bad { fill: var(--bad); } .timeline .status.insecure { fill: var(--warn); } .timeline .status.recovering { fill: var(--bad); opacity: .5; }
+.timeline .status.measured-bg { fill: var(--line); }
+.timeline .band { fill: var(--band); }
+.timeline .step-line { stroke: var(--muted); stroke-dasharray: 3 4; stroke-width: 1; }
+.timeline .step-dot circle { fill: var(--accent); } .timeline .step-dot text { fill: #fff; font-size: 11px; font-weight: 700; }
+.timeline .axis, .timeline .tick { stroke: var(--muted); }
+.timeline .tick-text { font-size: 11px; fill: var(--muted); } .timeline .tick-sub { font-size: 10px; fill: var(--muted); opacity: .8; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+.legend i { display: inline-block; width: 22px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+.steps { margin: 12px 0 0; padding-left: 0; list-style: none; display: grid; gap: 4px; }
+.steps li { display: grid; grid-template-columns: 26px 120px 1fr; gap: 8px; align-items: baseline; font-size: 14px; }
+.steps .n { background: var(--accent); color: #fff; border-radius: 50%; width: 20px; height: 20px; font-size: 11px;
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 700; }
+.steps .t { color: var(--muted); font-variant-numeric: tabular-nums; }
+.failure { border-left: 4px solid var(--bad); padding: 8px 12px; margin: 10px 0; background: var(--band); border-radius: 0 8px 8px 0; }
+.failure .when { font-weight: 700; color: var(--bad); }
+.failure .why { margin-top: 4px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tag { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 12px; font-weight: 600; }
+.tag.ok { background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok); }
+.tag.move { background: color-mix(in srgb, var(--warn) 22%, transparent); color: var(--warn); }
+.tag.bad { background: color-mix(in srgb, var(--bad) 18%, transparent); color: var(--bad); }
+.note { color: var(--muted); font-size: 13.5px; }
+ul.lints { margin: 0; padding-left: 18px; } ul.lints li { margin: 4px 0; }
+details { margin-top: 12px; } summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+pre { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow-x: auto; font-size: 12.5px; }
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-top: 4px; }
+.metric { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+.metric b { display: block; font-size: 20px; } .metric span { color: var(--muted); font-size: 12.5px; }
+footer { color: var(--muted); font-size: 12.5px; margin-top: 22px; }
+@media (max-width: 700px) {
+  main { padding: 18px 12px 36px; } h1 { font-size: 21px; }
+  .steps li { grid-template-columns: 26px 1fr; } .steps .t { grid-column: 2; }
+}
+</style></head><body><main><header><div><div class='brand'>DNSSEC FlightCheck</div><h1>KSK rollover (double-DS), KSK swapped too early</h1><div class='meta'>Zone <b>bank.test.</b> · conservative model · propagation 5m · registry delay 1h · max cache TTL 7d · start 2026-11-02 12:00 UTC</div></div><div class="verdict bad">UNSAFE<small>SERVFAIL for up to 23h 1m</small></div></header><p class='desc'>The operator submits the DS for the new KSK and swaps the KSK in the DNSKEY RRset two hours later. Resolvers that cached the old DS RRset (TTL 1 day) cannot validate the new DNSKEY RRset.</p><section><h2>Timeline</h2><svg class="timeline" viewBox="0 0 1100 342" role="img" aria-label="Timeline of RRset versions and validation status"><defs><pattern id="hatch-ds" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect class="hatch-ds" width="3" height="6"/></pattern><pattern id="hatch-dnskey" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect class="hatch-dnskey" width="3" height="6"/></pattern><pattern id="hatch-data" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect class="hatch-data" width="3" height="6"/></pattern></defs><rect class="band" x="296.5" y="30" width="617.8" height="272"/><line class="step-line" x1="242.7" y1="30" x2="242.7" y2="272"/><g class="step-dot"><title>Submit DS for KSK2 at T+0</title><circle cx="242.7" cy="16" r="10"/><text x="242.7" y="20" text-anchor="middle">1</text></g><line class="step-line" x1="296.5" y1="30" x2="296.5" y2="272"/><g class="step-dot"><title>Swap KSK1 for KSK2 in the DNSKEY RRset at T+2h</title><circle cx="296.5" cy="16" r="10"/><text x="296.5" y="20" text-anchor="middle">2</text></g><line class="step-line" x1="350.2" y1="30" x2="350.2" y2="272"/><g class="step-dot"><title>Remove the DS for KSK1 at T+4h</title><circle cx="350.2" cy="16" r="10"/><text x="350.2" y="20" text-anchor="middle">3</text></g><text class="row-label" x="184" y="66" text-anchor="end">DS (parent)</text><g><title>DS v0: KSK1
+served before the plan -&gt; T+1h
+can stay cached until T+1d 1h (TTL 1d)
+introduced by: initial state</title><rect class="tail" fill="url(#hatch-ds)" x="269.6" y="44" width="644.6" height="16" rx="2"/><rect class="bar ds" x="196.0" y="44" width="73.6" height="16" rx="2"/><text class="bar-text" x="201.0" y="56">v0  KSK1</text></g><g><title>DS v1: KSK1 + KSK2
+served T+1h -&gt; T+5h
+can stay cached until T+1d 5h (TTL 1d)
+introduced by: Submit DS for KSK2</title><rect class="tail" fill="url(#hatch-ds)" x="377.0" y="64" width="644.6" height="16" rx="2"/><rect class="bar ds" x="269.6" y="64" width="107.4" height="16" rx="2"/><text class="bar-text" x="274.6" y="76">v1  KSK1 + KSK2</text></g><g><title>DS v2: KSK2
+served T+5h -&gt; never
+can stay cached until never (TTL 1d)
+introduced by: Remove the DS for KSK1</title><rect class="bar ds" x="377.0" y="44" width="707.0" height="16" rx="2"/><text class="bar-text" x="382.0" y="56">v2  KSK2</text></g><text class="row-label" x="184" y="116" text-anchor="end">DNSKEY</text><g><title>DNSKEY v0: KSK1 ZSK1  ·  sig KSK1
+served before the plan -&gt; T+2h 5m
+can stay cached until T+3h 5m (TTL 1h)
+introduced by: initial state</title><rect class="tail" fill="url(#hatch-dnskey)" x="298.7" y="94" width="26.9" height="16" rx="2"/><rect class="bar dnskey" x="196.0" y="94" width="102.7" height="16" rx="2"/><text class="bar-text" x="201.0" y="106">v0  KSK1 ZSK1  ·  sig KSK1</text></g><g><title>DNSKEY v1: KSK2 ZSK1  ·  sig KSK2
+served T+2h -&gt; never
+can stay cached until never (TTL 1h)
+introduced by: Swap KSK1 for KSK2 in the DNSKEY RRset</title><rect class="bar dnskey" x="296.5" y="114" width="787.5" height="16" rx="2"/><text class="bar-text" x="301.5" y="126">v1  KSK2 ZSK1  ·  sig KSK2</text></g><text class="row-label" x="184" y="166" text-anchor="end">www</text><g><title>www v0: sig ZSK1
+served before the plan -&gt; never
+can stay cached until never (TTL 1h)
+introduced by: initial state</title><rect class="bar data" x="196.0" y="144" width="888.0" height="16" rx="2"/><text class="bar-text" x="201.0" y="156">v0  sig ZSK1</text></g><text class="row-label" x="184" y="211" text-anchor="end">Predicted: conservative</text><rect class="status ok" x="196.0" y="198" width="100.5" height="18"><title>secure: before the plan -&gt; T+2h</title></rect><rect class="status bad" x="296.5" y="198" width="617.8" height="18"><title>bogus: T+2h -&gt; T+1d 1h</title></rect><rect class="status recovering" x="914.2" y="198" width="0.4" height="18"><title>recovering: T+1d 1h -&gt; T+1d 1h 1m</title></rect><rect class="status ok" x="914.7" y="198" width="169.3" height="18"><title>secure: T+1d 1h 1m -&gt; never</title></rect><text class="row-label" x="184" y="237" text-anchor="end">Predicted: fetch</text><rect class="status ok" x="196.0" y="224" width="100.5" height="18"><title>secure: before the plan -&gt; T+2h</title></rect><rect class="status bad" x="296.5" y="224" width="617.8" height="18"><title>bogus: T+2h -&gt; T+1d 1h</title></rect><rect class="status recovering" x="914.2" y="224" width="0.4" height="18"><title>recovering: T+1d 1h -&gt; T+1d 1h 1m</title></rect><rect class="status ok" x="914.7" y="224" width="169.3" height="18"><title>secure: T+1d 1h 1m -&gt; never</title></rect><text class="row-label" x="184" y="263" text-anchor="end">Lab: behind cache (12)</text><rect class="status measured-bg" x="196" y="250" width="888" height="18"/><rect class="status ok" x="196.0" y="250" width="105.6" height="18"><title>measured secure: T-23h 23s -&gt; T+2h 11m 32s</title></rect><rect class="status bad" x="301.6" y="250" width="567.0" height="18"><title>measured bogus: T+2h 11m 32s -&gt; T+23h 18m 1s</title></rect><rect class="status ok" x="868.6" y="250" width="215.4" height="18"><title>measured secure: T+23h 18m 1s -&gt; T+1d 7h 19m 12s</title></rect><text class="row-label" x="184" y="289" text-anchor="end">Lab: validating (12)</text><rect class="status measured-bg" x="196" y="276" width="888" height="18"/><rect class="status ok" x="196.0" y="276" width="103.9" height="18"><title>measured secure: T-22h 43m 35s -&gt; T+2h 7m 43s</title></rect><rect class="status bad" x="299.9" y="276" width="574.3" height="18"><title>measured bogus: T+2h 7m 43s -&gt; T+23h 30m 36s</title></rect><rect class="status ok" x="874.2" y="276" width="209.8" height="18"><title>measured secure: T+23h 30m 36s -&gt; T+1d 7h 19m 12s</title></rect><line class="axis" x1="196" y1="304" x2="1084" y2="304"/><line class="tick" x1="242.7" y1="302" x2="242.7" y2="308"/><text class="tick-text" x="242.7" y="321" text-anchor="middle">T+0</text><text class="tick-sub" x="242.7" y="334" text-anchor="middle">02 Nov 12:00</text><line class="tick" x1="323.3" y1="302" x2="323.3" y2="308"/><text class="tick-text" x="323.3" y="321" text-anchor="middle">T+3h</text><text class="tick-sub" x="323.3" y="334" text-anchor="middle">02 Nov 15:00</text><line class="tick" x1="403.9" y1="302" x2="403.9" y2="308"/><text class="tick-text" x="403.9" y="321" text-anchor="middle">T+6h</text><text class="tick-sub" x="403.9" y="334" text-anchor="middle">02 Nov 18:00</text><line class="tick" x1="484.5" y1="302" x2="484.5" y2="308"/><text class="tick-text" x="484.5" y="321" text-anchor="middle">T+9h</text><text class="tick-sub" x="484.5" y="334" text-anchor="middle">02 Nov 21:00</text><line class="tick" x1="565.1" y1="302" x2="565.1" y2="308"/><text class="tick-text" x="565.1" y="321" text-anchor="middle">T+12h</text><text class="tick-sub" x="565.1" y="334" text-anchor="middle">03 Nov 00:00</text><line class="tick" x1="645.6" y1="302" x2="645.6" y2="308"/><text class="tick-text" x="645.6" y="321" text-anchor="middle">T+15h</text><text class="tick-sub" x="645.6" y="334" text-anchor="middle">03 Nov 03:00</text><line class="tick" x1="726.2" y1="302" x2="726.2" y2="308"/><text class="tick-text" x="726.2" y="321" text-anchor="middle">T+18h</text><text class="tick-sub" x="726.2" y="334" text-anchor="middle">03 Nov 06:00</text><line class="tick" x1="806.8" y1="302" x2="806.8" y2="308"/><text class="tick-text" x="806.8" y="321" text-anchor="middle">T+21h</text><text class="tick-sub" x="806.8" y="334" text-anchor="middle">03 Nov 09:00</text><line class="tick" x1="887.4" y1="302" x2="887.4" y2="308"/><text class="tick-text" x="887.4" y="321" text-anchor="middle">T+1d</text><text class="tick-sub" x="887.4" y="334" text-anchor="middle">03 Nov 12:00</text><line class="tick" x1="968.0" y1="302" x2="968.0" y2="308"/><text class="tick-text" x="968.0" y="321" text-anchor="middle">T+1d 3h</text><text class="tick-sub" x="968.0" y="334" text-anchor="middle">03 Nov 15:00</text><line class="tick" x1="1048.5" y1="302" x2="1048.5" y2="308"/><text class="tick-text" x="1048.5" y="321" text-anchor="middle">T+1d 6h</text><text class="tick-sub" x="1048.5" y="334" text-anchor="middle">03 Nov 18:00</text></svg><div class='legend'><span><i style='background:var(--dnskey)'></i>served by the authoritative servers</span><span><i style='background:repeating-linear-gradient(135deg,var(--dnskey) 0 3px,transparent 3px 6px)'></i>can still be in resolver caches</span><span><i style='background:var(--ok)'></i>validates</span><span><i style='background:var(--bad)'></i>bogus (SERVFAIL)</span><span><i style='background:var(--bad);opacity:.5'></i>valid again, resolvers still remember the failure</span><span><i style='background:var(--warn)'></i>insecure for some or all resolvers</span></div><ol class='steps'><li><span class='n'>1</span><span class='t'>T+0</span><span>Submit DS for KSK2</span></li><li><span class='n'>2</span><span class='t'>T+2h</span><span>Swap KSK1 for KSK2 in the DNSKEY RRset</span></li><li><span class='n'>3</span><span class='t'>T+4h</span><span>Remove the DS for KSK1</span></li></ol></section><section><h2>Lab measurement</h2><div class='metrics'><div class='metric'><b>12,412</b>lookups with real signatures<br><span>5,046 DNS queries, 10.8s</span></div><div class='metric'><b>1,349/1,349</b>SERVFAILs inside the prediction · validating resolvers<br><span>93% of the predicted window observed</span></div><div class='metric'><b>1,390/1,390</b>SERVFAILs inside the prediction · validators behind a cache<br><span>92% of the predicted window observed</span></div><div class='metric'><b>agrees</b>verdict<br><span>lookup every 5m per resolver</span></div></div></section><section><h2>What breaks</h2><div class='failure'><div class='when'>T+2h (Mon 02 Nov 14:00 UTC) → T+1d 1h (Tue 03 Nov 13:00 UTC) · 23h</div><div class='why'>From T+2h (Mon 02 Nov 14:00 UTC) the zone serves DNSKEY v1 (step &quot;Swap KSK1 for KSK2 in the DNSKEY RRset&quot;), but resolvers may still hold DS v0 in their cache until T+1d 1h (Tue 03 Nov 13:00 UTC). DNSKEY becomes bogus: no chain of trust from DS to DNSKEY: none of the keys the DS RRset points to {KSK1} is in the DNSKEY RRset {KSK2, ZSK1}. Resolvers can keep answering SERVFAIL for up to 1m after that.</div></div><p class='note'>Resolver profile: worst. A failed chain of trust is remembered for 1m and a failed answer for 1m. The zone itself cannot be validated for 23h.</p></section><section><h2>Safe schedule</h2><table><thead><tr><th>Step</th><th>Planned</th><th>Earliest safe</th><th>Recommended</th><th></th></tr></thead><tbody><tr><td>Submit DS for KSK2</td><td class='num'>T+0</td><td class='num'>T+0</td><td class='num'>T+0</td><td><span class='tag ok'>ok</span></td></tr><tr><td>Swap KSK1 for KSK2 in the DNSKEY RRset</td><td class='num'>T+2h</td><td class='num'>T+1d 1h</td><td class='num'>T+1d 2h</td><td><span class='tag move'>move</span></td></tr><tr><td>Remove the DS for KSK1</td><td class='num'>T+4h</td><td class='num'>T+1d 2h 5m</td><td class='num'>T+1d 3h 5m</td><td><span class='tag move'>move</span></td></tr></tbody></table><p class='note'>Recommended = earliest safe moment + 1h safety margin. The corrected plan is <b>safe</b> in the conservative model.</p><details><summary>Corrected plan (YAML)</summary><pre>name: KSK rollover (double-DS), KSK swapped too early
+description: &#x27;The operator submits the DS for the new KSK and swaps the KSK in the
+  DNSKEY RRset two hours later. Resolvers that cached the old DS RRset (TTL 1 day)
+  cannot validate the new DNSKEY RRset.
+
+  &#x27;
+zone: bank.test.
+start: 2026-11-02 12:00:00+00:00
+delays:
+  propagation: 5m
+  registry: 1h
+resolver:
+  max_cache_ttl: 7d
+margin: 1h
+keys:
+  KSK1:
+    role: ksk
+    algorithm: ECDSAP256SHA256
+  KSK2:
+    role: ksk
+    algorithm: ECDSAP256SHA256
+  ZSK1:
+    role: zsk
+    algorithm: ECDSAP256SHA256
+initial:
+  ds:
+    keys:
+    - KSK1
+    ttl: 1d
+  dnskey:
+    keys:
+    - KSK1
+    - ZSK1
+    signed_by:
+    - KSK1
+    ttl: 1h
+  data:
+    www:
+      signed_by:
+      - ZSK1
+      ttl: 1h
+steps:
+- name: Submit DS for KSK2
+  at: 0s
+  ds:
+    keys:
+    - KSK1
+    - KSK2
+- name: Swap KSK1 for KSK2 in the DNSKEY RRset
+  at: 1d2h
+  dnskey:
+    keys:
+    - KSK2
+    - ZSK1
+    signed_by:
+    - KSK2
+- name: Remove the DS for KSK1
+  at: 1d3h5m
+  ds:
+    keys:
+    - KSK2
+</pre></details></section><section><h2>Notes</h2><ul class='lints'><li><b>info</b> · plan: DS changes take effect 1h after submission (registry delay)</li></ul></section><footer>Worst-case analysis: a version can stay in a resolver's cache for a full TTL after the last authoritative server stopped serving it. Conservative model = RFC 7583 assumptions (any cached versions may be combined, as for validators behind caches); fetch model = a validating resolver that validates on fetch and trusts its cache.</footer></main></body></html>

@@ -1,0 +1,19 @@
+FlightCheck lab - ZSK rollover (pre-publish), new ZSK used immediately
+2 resolver populations x 12 resolvers, a lookup every 5m per resolver, 21,889 lookups, 2,015 DNS queries with real signatures, 12.3s
+Simulated period: T-1d -> T+1d 2h 1m 41s
+
+validating resolvers (compared with the fetch model)
+  predicted bogus: T+0 -> T+1h 5m
+  measured: no SERVFAIL in 11,189 lookups
+  every SERVFAIL inside a predicted window: yes (0/0)
+  failures observed during 0s of the 1h 6m predicted (0%)
+
+validators behind a cache (compared with the conservative model)
+  predicted bogus: T+0 -> T+1h 5m, T+2h -> T+1d 5m
+  measured: 1,427 of 10,700 lookups SERVFAIL, first T+9m 49s, last T+23h 18m 34s
+  every SERVFAIL inside a predicted window: yes (1427/1427)
+  failures observed during 22h 21m 55s of the 23h 12m predicted (96%)
+     1,394 x mail.bank.test. A: no valid signature from a trusted key (no RRSIGs validated)
+        33 x www.bank.test. A: no valid signature from a trusted key (no RRSIGs validated)
+
+The lab agrees with the simulator: no failure happened outside the predicted windows.

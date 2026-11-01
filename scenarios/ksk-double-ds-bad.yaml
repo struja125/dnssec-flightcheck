@@ -1,0 +1,34 @@
+name: KSK rollover (double-DS), KSK swapped too early
+description: >
+  The operator submits the DS for the new KSK and swaps the KSK in the DNSKEY RRset two hours
+  later. Resolvers that cached the old DS RRset (TTL 1 day) cannot validate the new DNSKEY RRset.
+zone: bank.test.
+start: 2026-11-02T12:00:00Z
+delays:
+  propagation: 5m      # primary -> all secondaries
+  registry: 1h         # DS submission -> visible in the parent zone
+resolver:
+  max_cache_ttl: 7d
+margin: 1h
+
+keys:
+  KSK1: {role: ksk, algorithm: ECDSAP256SHA256}
+  KSK2: {role: ksk, algorithm: ECDSAP256SHA256}
+  ZSK1: {role: zsk, algorithm: ECDSAP256SHA256}
+
+initial:
+  ds:     {keys: [KSK1], ttl: 1d}
+  dnskey: {keys: [KSK1, ZSK1], signed_by: [KSK1], ttl: 1h}
+  data:
+    www:  {signed_by: [ZSK1], ttl: 1h}
+
+steps:
+  - name: Submit DS for KSK2
+    at: 0h
+    ds: {keys: [KSK1, KSK2]}
+  - name: Swap KSK1 for KSK2 in the DNSKEY RRset
+    at: 2h
+    dnskey: {keys: [KSK2, ZSK1], signed_by: [KSK2]}
+  - name: Remove the DS for KSK1
+    at: 4h
+    ds: {keys: [KSK2]}

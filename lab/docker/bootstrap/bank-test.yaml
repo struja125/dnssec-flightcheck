@@ -1,0 +1,17 @@
+# The stable zone for `flightcheck lab-bootstrap`: what bank.test. publishes now, with no planned change.
+# Only the servers read this file. The snapshot learns the zone from their DNS answers.
+name: bank.test. as it is now
+zone: bank.test.
+
+keys:
+  KSK1: {role: ksk, algorithm: ECDSAP256SHA256}
+  ZSK1: {role: zsk, algorithm: ECDSAP256SHA256}
+
+initial:
+  ds:     {keys: [KSK1], ttl: 1d}
+  dnskey: {keys: [KSK1, ZSK1], signed_by: [KSK1], ttl: 1h}
+  data:
+    www:  {signed_by: [ZSK1], ttl: 1h}
+    mail: {signed_by: [ZSK1], ttl: 1d}
+
+steps: []

@@ -6,6 +6,8 @@ FlightCheck analizira predložene trenutke objavljivanja, zamene i uklanjanja DN
 
 Program **ne menja javni DNS**, ne zahteva privatne ključeve postojeće zone i nije alat za automatsko izvršavanje rollover-a u produkciji.
 
+> **Napomena:** delovi koda napisani su uz pomoć AI alata. Softver se daje „takav kakav jeste“, bez garancije, i koristi se na sopstvenu odgovornost. Pogledajte [DISCLAIMER.md](DISCLAIMER.md) i spisak korišćenih open source komponenti u [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+
 > **Za prvi put:** dovoljno je instalirati Python i izvršiti poglavlje [Prvi test za 2 minuta](#3-prvi-test-za-2-minuta-bez-docker-a). Za pravi mrežni demo sa Unbound/BIND resolverima instalirajte i Docker.
 
 ## Sadržaj

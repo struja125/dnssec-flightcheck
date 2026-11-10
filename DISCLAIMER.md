@@ -40,12 +40,6 @@ licencama. Spisak komponenti, licenci i obaveza nalazi se u
 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). Te komponente nisu delo autora ovog
 projekta.
 
-### 5. Odnos prema posebnim ugovorima
-
-Ova izjava važi za javno dostupnu verziju projekta. Ona ne menja prava i obaveze iz posebnih
-pisanih ugovora koje su autori zaključili sa pojedinim licima; u odnosu na ta lica važe
-odredbe tih ugovora.
-
 ---
 
 ## English
@@ -85,9 +79,3 @@ The project uses open source libraries and tools that are distributed under thei
 licenses. The list of components, licenses and obligations is in
 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). Those components are not the work of the
 authors of this project.
-
-### 5. Relation to separate agreements
-
-This disclaimer applies to the publicly available version of the project. It does not change
-the rights and obligations under separate written agreements that the authors have concluded
-with particular parties; the terms of those agreements apply to those parties.
